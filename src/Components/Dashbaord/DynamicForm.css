@@ -1,0 +1,706 @@
+/* DynamicForm.css - With Dropdown */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.form-container {
+  margin: 6rem auto;
+  padding: 2rem;
+  border-radius: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-title {
+  color: black;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.form-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+}
+
+.dynamic-form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Sector Dropdown */
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.input-icon {
+  color: #667eea;
+}
+
+.sector-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.sector-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.sector-dropdown-toggle:hover {
+  border-color: #667eea;
+  transform: translateY(-1px);
+}
+
+.sector-dropdown-toggle.open {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.selected-sector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sector-dropdown-icon {
+  font-size: 1.5rem;
+  color: #667eea;
+}
+
+.selected-sector-text {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.dropdown-arrow {
+  color: #718096;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.rotate {
+  transform: rotate(180deg);
+}
+
+.sector-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  height: 230px;
+  overflow-y: auto;
+  animation: dropdownFadeIn 0.3s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sector-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sector-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.sector-dropdown-item:hover {
+  background-color: #f7fafc;
+}
+
+.sector-dropdown-item.selected {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.sector-dropdown-item.selected .sector-dropdown-icon {
+  color: white;
+}
+
+/* Enhanced Preferred Areas Styles */
+.selected-areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.area-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.area-remove {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.area-remove:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.areas-selection {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f7fafc;
+}
+
+.area-search {
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+.area-search:focus {
+  box-shadow: none;
+  transform: none;
+}
+
+.areas-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.area-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  margin: 10px;
+}
+
+.area-option:hover {
+  background-color: #edf2f7;
+}
+
+.area-option.selected {
+  background-color: #667eea;
+  color: white;
+}
+
+.area-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #cbd5e0;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  transition: all 0.2s ease;
+}
+
+.area-option.selected .area-checkbox {
+  background: white;
+  border-color: white;
+  color: #667eea;
+}
+
+.area-name {
+  flex: 1;
+}
+
+.no-areas {
+  padding: 1rem;
+  text-align: center;
+  color: #718096;
+  font-style: italic;
+}
+
+.area-placeholder {
+  padding: 1rem;
+  text-align: center;
+  color: #a0aec0;
+  font-style: italic;
+  background-color: #f7fafc;
+  border: 2px dashed #e2e8f0;
+  border-radius: 8px;
+}
+
+/* Form Content */
+.form-content {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s ease;
+}
+
+.form-content.visible {
+  opacity: 1;
+  max-height: 2000px;
+  margin-bottom: 10px;
+}
+
+.sector-form {
+  animation: slideInUp 0.5s ease;
+}
+
+.sector-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  /* padding-left: 10px; */
+}
+
+.sector-title-icon {
+  color: #667eea;
+}
+
+/* Form Layout */
+.dynamic-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+/* Radio Buttons */
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  padding-left: 10px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+}
+
+.radio-label input {
+  display: none;
+}
+
+.radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #cbd5e0;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.radio-label input:checked + .radio-custom {
+  border-color: #667eea;
+  background-color: #667eea;
+}
+
+.radio-label input:checked + .radio-custom::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Input Fields */
+.form-input {
+  width: 100%;
+  padding: 0.45rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Select Fields */
+.select-wrapper {
+  position: relative;
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.45rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  font-size: 1rem;
+  appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #718096;
+  pointer-events: none;
+}
+
+/* Description Section */
+.description-section {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s ease;
+  
+}
+
+.description-section.visible {
+  opacity: 1;
+  max-height: 200px;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  background-color: #f7fafc;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .form-title {
+    font-size: 2rem;
+  }
+  
+  .dynamic-form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .radio-group {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .selected-areas {
+    justify-content: center;
+  }
+  
+  .sector-dropdown-toggle {
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .sector-dropdown-item {
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dynamic-form {
+    padding: 1.5rem;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #667eea;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #5a6fd8;
+}
+
+/* Smooth transitions for all interactive elements */
+.sector-dropdown-toggle,
+.sector-dropdown-item,
+.area-option,
+.area-chip,
+.form-input,
+.form-select,
+.submit-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+
+/* Add these to your DynamicForm.css */
+
+.mandatory-fields {
+  margin-bottom: 0px;
+}
+
+.additional-fields-toggle {
+  text-align: end;
+  margin: 5px;
+}
+
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 2px dashed #e2e8f0;
+  padding: 2px 4px;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background-color: #f8fafc;
+}
+
+
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form label adjustments for required fields */
+.form-label[class*="*"] {
+  font-weight: 600;
+}
+
+
+
+/* Ensure proper spacing */
+.sector-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+
+
+/* Add these styles to your DynamicForm.css */
+
+
+
+.add-custom-area-btn {
+  background-color: #e3f2fd;
+  border: 1px dashed #2196f3;
+  color: #2196f3;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.add-custom-area-btn:hover {
+  background-color: #bbdefb;
+}
+
+/* Google Maps autocomplete styling */
+.pac-container {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-family: inherit;
+}
+
+.pac-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.pac-item:hover {
+  background-color: #f5f5f5;
+}
+
+.pac-item-selected {
+  background-color: #e3f2fd;
+}
+
+.pac-icon {
+  margin-right: 8px;
+}
+
+.pac-matched {
+  font-weight: bold;
+  color: #2196f3;
+}
+
+
+
+.react-select-error .react-select__control {
+  border: 1px solid #ff4d4f !important;
+  box-shadow: none !important;
+}
+
+.form-input-error {
+  border: 1px solid #ff4d4f;
+}
+
+.field-error {
+  color: #ff4d4f;
+  font-size: 13px;
+  margin-top: 6px;
+}

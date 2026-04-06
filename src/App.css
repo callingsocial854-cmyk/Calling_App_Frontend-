@@ -1,0 +1,57 @@
+.dropdown-toggle{
+    outline: none !important;
+}
+@media only screen and (max-width: 600px) {
+    .fixed-header .header-menu {
+        padding: 0 0px !important;
+    }
+}
+
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.chatLoader {
+  font-size: 14px;
+  color: #888;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+
+/* .css-18ultcs-MuiPopper-root-MuiPickerPopper-root{
+    position: none !important;
+} */
+
+
+.no-internet-header {
+  position: fixed;            /* 🔥 header ke upar rahe */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: linear-gradient(90deg, #ff4d4f, #ff7875);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+
+  z-index: 10000;             /* 🔥 main header se bhi upar */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+
