@@ -174,21 +174,7 @@ const Login = () => {
                 id="registration-tab"
                 role="tabpanel"
               >
-                {/* Registration Steps */}
-                {/* <div className="registration-steps">
-                  <div
-                    className={`step ${registrationStep >= 1 ? "active" : ""}`}
-                  >
-                    <div className="step-number">1</div>
-                    <span>Mobile</span>
-                  </div>
-                  <div
-                    className={`step ${registrationStep >= 2 ? "active" : ""}`}
-                  >
-                    <div className="step-number">2</div>
-                    <span>OTP</span>
-                  </div>
-                </div> */}
+                
 
                 <h3 className="item-title">
                   {registrationStep === 1 && "Sign In or Continue with"}
