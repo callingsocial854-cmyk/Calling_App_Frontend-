@@ -45,7 +45,6 @@ const NewQueries = () => {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [successAlert, setSuccessAlert] = useState(false);
-  const [showOptional, setShowOptional] = useState(false);
   const dispatch = useDispatch();
   const [categories, setCategories] = useState([]);
   const [categoryFields, setCategoryFields] = useState({});
@@ -106,8 +105,6 @@ const NewQueries = () => {
           ...prev,
           [categoryId]: initialFormData,
         }));
-
-        setShowOptional(false);
       }
     } catch (error) {
       console.error("Error fetching category fields:", error);
@@ -172,7 +169,6 @@ const NewQueries = () => {
     setErrors(newErrors);
 
     // ✅ SCROLL TO FIRST ERROR
-
     if (firstInvalidField) {
       const el = document.getElementById(firstInvalidField);
 
@@ -555,7 +551,6 @@ const NewQueries = () => {
           setFormData({});
           setDescription("");
           setExtraDetails("");
-          setShowOptional(false);
         }, 1500);
       }
     } catch (error) {
@@ -640,51 +635,18 @@ const NewQueries = () => {
               <div className="loading">Loading form fields...</div>
             ) : (
               <div className="form-fields-container">
-                {/* Required fields section */}
-                {requiredFields.length > 0 && (
-                  <div className="required-fields-section">
-                    <div className="section-header">
-                      <h4>Required Information</h4>
-                    </div>
-                    <div className="form-fields-grid">
-                      {/* {renderDefaultFields()} */}
-                      <div id="location-section">
-                        <LocationSelector
-                          onChange={setLocationData}
-                          errors={errors}
-                        />
-                      </div>
-                      {requiredFields.map((field) => renderField(field))}
-                    </div>
+                <div className="form-fields-grid">
+                  <div id="location-section">
+                    <LocationSelector
+                      onChange={setLocationData}
+                      errors={errors}
+                    />
                   </div>
-                )}
-
-                {/* Optional fields section */}
-                {optionalFields.length > 0 && (
-                  <div className="optional-fields-section">
-                    <div className="additional-fields-toggle">
-                      <button
-                        type="button"
-                        className="toggle-btn"
-                        onClick={() => setShowOptional(!showOptional)}
-                      >
-                        {showOptional ? <FaMinus /> : <FaPlus />}
-                        <span>
-                          {showOptional ? "Hide" : "Show"} Additional Options
-                        </span>
-                      </button>
-                    </div>
-
-                    {showOptional && (
-                      <div className="optional-fields-grid">
-                        {optionalFields.map((field) => renderField(field))}
-                      </div>
-                    )}
-                  </div>
-                )}
+                  {requiredFields.map((field) => renderField(field))}
+                  {optionalFields.map((field) => renderField(field))}
+                </div>
 
                 {/* Submit Button */}
-
                 <div className="submit-section">
                   <button
                     type="button"

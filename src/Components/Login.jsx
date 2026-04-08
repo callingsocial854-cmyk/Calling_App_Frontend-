@@ -253,7 +253,7 @@ const Login = () => {
                     <div className="step-content">
                       <div className="otp-info">
                         <p>OTP sent to +91 {formData.mobile}</p>
-                        <p>OTP: {otp}</p>
+                        {/* <p>OTP: {otp}</p> */}
                         <button
                           type="button"
                           className="resend-otp"
