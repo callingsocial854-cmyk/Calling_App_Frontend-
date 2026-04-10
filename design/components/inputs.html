@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Input Components | ZuStation Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../mockups/styles.css">
+<link rel="stylesheet" href="components.css">
+<style>
+body{background:#F5F5F5;font-family:'Inter',sans-serif;margin:0;}
+.ds-topnav{background:#fff;border-bottom:1px solid #E8E8E8;padding:12px 24px;display:flex;align-items:center;gap:24px;position:sticky;top:0;z-index:100;}
+.ds-topnav .logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;color:#1A1A1A;font-size:15px;margin-right:16px;}
+.ds-topnav .logo img{height:32px;width:32px;}
+.ds-topnav a{text-decoration:none;color:#4A4A4A;font-size:14px;font-weight:500;padding:6px 12px;border-radius:6px;transition:all .2s;}
+.ds-topnav a:hover,.ds-topnav a.active{background:#FFF0F1;color:#E63946;}
+.ds-topnav .back{margin-left:auto;color:#9E9E9E;font-size:13px;}
+.page-title{padding:32px 32px 0;font-size:28px;font-weight:700;color:#1A1A1A;}
+.page-subtitle{padding:4px 32px 24px;color:#9E9E9E;font-size:15px;}
+.section{background:#fff;border-radius:12px;margin:0 32px 24px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.section-title{font-size:13px;font-weight:600;color:#9E9E9E;text-transform:uppercase;letter-spacing:.08em;margin:0 0 16px;}
+.cls-tag{font-size:11px;color:#9E9E9E;background:#F5F5F5;padding:2px 8px;border-radius:4px;font-family:monospace;margin-top:6px;display:inline-block;}
+.item-wrap{display:flex;flex-direction:column;gap:2px;margin-bottom:16px;}
+.input-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+input,select,textarea{font-family:'Inter',sans-serif;}
+.field-input{width:100%;padding:10px 14px;border:1.5px solid #E8E8E8;border-radius:8px;font-size:14px;color:#1A1A1A;outline:none;background:#fff;box-sizing:border-box;transition:border-color .2s;}
+.field-input:focus{border-color:#E63946;box-shadow:0 0 0 3px rgba(230,57,70,.12);}
+.field-input.error{border-color:#E63946;}
+.field-input.success{border-color:#2D6A4F;}
+.field-input:disabled{background:#F5F5F5;color:#9E9E9E;cursor:not-allowed;}
+.field-label{font-size:13px;font-weight:500;color:#4A4A4A;margin-bottom:4px;display:block;}
+.field-hint{font-size:12px;color:#9E9E9E;margin-top:4px;}
+.field-error{font-size:12px;color:#E63946;margin-top:4px;}
+.field-success{font-size:12px;color:#2D6A4F;margin-top:4px;}
+.input-icon-wrap{position:relative;}
+.input-icon-wrap .field-input{padding-left:40px;}
+.input-icon-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9E9E9E;}
+.toggle-wrap{display:flex;align-items:center;gap:10px;}
+.toggle{position:relative;display:inline-block;width:44px;height:24px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#E8E8E8;border-radius:24px;cursor:pointer;transition:.3s;}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;}
+.toggle input:checked~.toggle-slider{background:#E63946;}
+.toggle input:checked~.toggle-slider:before{transform:translateX(20px);}
+.checkbox-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.checkbox-wrap input[type=checkbox]{width:16px;height:16px;accent-color:#E63946;cursor:pointer;}
+.radio-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:8px;}
+.radio-wrap input[type=radio]{width:16px;height:16px;accent-color:#E63946;cursor:pointer;}
+</style>
+</head>
+<body>
+<nav class="ds-topnav">
+  <a href="../mockups/dashboard.html" class="logo"><img src="../mockups/assets/logo.svg" alt="ZuStation">ZuStation DS</a>
+  <a href="buttons.html">Buttons</a>
+  <a href="inputs.html" class="active">Inputs</a>
+  <a href="cards.html">Cards</a>
+  <a href="navigation.html">Navigation</a>
+  <a href="../mockups/dashboard.html" class="back">← Back to Mockups</a>
+</nav>
+
+<div class="page-title">Input Components</div>
+<div class="page-subtitle">Form input variants with validation states.</div>
+
+<!-- Text Inputs -->
+<div class="section">
+  <div class="section-title">Text Inputs</div>
+  <div class="input-grid">
+    <div class="item-wrap">
+      <label class="field-label">Default Input</label>
+      <input class="field-input" type="text" placeholder="Enter text...">
+      <span class="cls-tag">.field-input</span>
+    </div>
+    <div class="item-wrap">
+      <label class="field-label">With Value</label>
+      <input class="field-input" type="text" value="John Doe">
+      <span class="cls-tag">.field-input (filled)</span>
+    </div>
+    <div class="item-wrap">
+      <label class="field-label">Error State</label>
+      <input class="field-input error" type="text" value="invalid@">
+      <span class="field-error">Please enter a valid email address</span>
+      <span class="cls-tag">.field-input.error</span>
+    </div>
+    <div class="item-wrap">
+      <label class="field-label">Success State</label>
+      <input class="field-input success" type="text" value="john@example.com">
+      <span class="field-success">✓ Email is available</span>
+      <span class="cls-tag">.field-input.success</span>
+    </div>
+    <div class="item-wrap">
+      <label class="field-label">Disabled</label>
+      <input class="field-input" type="text" value="Read only" disabled>
+      <span class="cls-tag">.field-input [disabled]</span>
+    </div>
+    <div class="item-wrap">
+      <label class="field-label">With Helper Text</label>
+      <input class="field-input" type="text" placeholder="@username">
+      <span class="field-hint">Your public username (no spaces)</span>
+      <span class="cls-tag">+ .field-hint</span>
+    </div>
+  </div>
+</div>
+
+<!-- Input with Icons -->
+<div class="section">
+  <div class="section-title">Inputs with Icons</div>
+  <div class="input-grid">
+    <div class="item-wrap">
+      <label class="field-label">Search</label>
+      <div class="input-icon-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="field-input" type="search" placeholder="Search contacts...">
+      </div>
+      <span class="cls-tag">.input-icon-wrap</span>
+    </div>
+    <div class="item-wrap">
+      <label class="field-label">Email</label>
+      <div class="input-icon-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <input class="field-input" type="email" placeholder="you@example.com">
+      </div>
+      <span class="cls-tag">.input-icon-wrap (email)</span>
+    </div>
+    <div class="item-wrap">
+      <label class="field-label">Password</label>
+      <div class="input-icon-wrap" style="position:relative;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <input class="field-input" type="password" id="pwdInput" placeholder="Password" style="padding-right:44px;">
+        <button onclick="var i=document.getElementById('pwdInput');i.type=i.type==='password'?'text':'password'" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9E9E9E;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <span class="cls-tag">password + show/hide</span>
+    </div>
+  </div>
+</div>
+
+<!-- Textarea -->
+<div class="section">
+  <div class="section-title">Textarea</div>
+  <div style="max-width:480px;">
+    <div class="item-wrap">
+      <label class="field-label">Message</label>
+      <textarea class="field-input" id="ta" rows="4" maxlength="200" placeholder="Type your message..." oninput="document.getElementById('cc').textContent=this.value.length+'/200'" style="resize:vertical;"></textarea>
+      <div style="display:flex;justify-content:flex-end;"><span id="cc" class="field-hint">0/200</span></div>
+      <span class="cls-tag">textarea + char counter</span>
+    </div>
+  </div>
+</div>
+
+<!-- Select -->
+<div class="section">
+  <div class="section-title">Select / Dropdown</div>
+  <div style="max-width:320px;">
+    <div class="item-wrap">
+      <label class="field-label">Department</label>
+      <select class="field-input" style="cursor:pointer;">
+        <option value="">Select department...</option>
+        <option>Customer Support</option>
+        <option>Sales</option>
+        <option>Technical</option>
+        <option>Billing</option>
+      </select>
+      <span class="cls-tag">select.field-input</span>
+    </div>
+  </div>
+</div>
+
+<!-- Checkboxes & Radios -->
+<div class="section">
+  <div class="section-title">Checkboxes &amp; Radio Buttons</div>
+  <div style="display:flex;gap:40px;flex-wrap:wrap;">
+    <div>
+      <div style="font-size:13px;font-weight:600;color:#9E9E9E;margin-bottom:12px;">CHECKBOXES</div>
+      <label class="checkbox-wrap" style="margin-bottom:10px;display:flex;"><input type="checkbox" checked> Push Notifications</label>
+      <label class="checkbox-wrap" style="margin-bottom:10px;display:flex;"><input type="checkbox"> Email Alerts</label>
+      <label class="checkbox-wrap" style="display:flex;"><input type="checkbox" disabled> SMS (disabled)</label>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:#9E9E9E;margin-bottom:12px;">RADIO BUTTONS</div>
+      <label class="radio-wrap"><input type="radio" name="theme" value="light" checked> Light Theme</label>
+      <label class="radio-wrap"><input type="radio" name="theme" value="dark"> Dark Theme</label>
+      <label class="radio-wrap"><input type="radio" name="theme" value="system"> System Default</label>
+    </div>
+  </div>
+</div>
+
+<!-- Toggles -->
+<div class="section">
+  <div class="section-title">Toggle Switches</div>
+  <div style="display:flex;flex-direction:column;gap:16px;max-width:360px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:14px;font-weight:500;color:#1A1A1A;">Show Online Status</div><div class="field-hint" style="margin:0;">Others can see when you're online</div></div>
+      <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:14px;font-weight:500;color:#1A1A1A;">Read Receipts</div><div class="field-hint" style="margin:0;">Send read confirmations</div></div>
+      <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div><div style="font-size:14px;font-weight:500;color:#1A1A1A;">Call Ringtone</div><div class="field-hint" style="margin:0;">Play ringtone for incoming calls</div></div>
+      <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+    </div>
+  </div>
+</div>
+
+<!-- File Upload -->
+<div class="section">
+  <div class="section-title">File Upload</div>
+  <div style="border:2px dashed #E8E8E8;border-radius:12px;padding:32px;text-align:center;max-width:400px;transition:all .2s;cursor:pointer;" onmouseenter="this.style.borderColor='#E63946';this.style.background='#FFF0F1'" onmouseleave="this.style.borderColor='#E8E8E8';this.style.background='transparent'">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <div style="font-size:14px;font-weight:600;color:#1A1A1A;margin-bottom:4px;">Drop files here or <span style="color:#E63946;">browse</span></div>
+    <div style="font-size:12px;color:#9E9E9E;">Supports JPG, PNG, PDF up to 10MB</div>
+    <input type="file" style="display:none;">
+  </div>
+  <span class="cls-tag" style="margin-top:8px;display:inline-block;">.file-upload-zone</span>
+</div>
+
+<div style="height:40px;"></div>
+</body>
+</html>
