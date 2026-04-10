@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZuStation — Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      display: flex;
+      background: var(--color-light);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Sidebar Overlay ──────────────────────────────────────────────────── */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 90;
+      backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    /* ── Sidebar ──────────────────────────────────────────────────────────── */
+    .sidebar {
+      width: 240px; flex-shrink: 0;
+      background: var(--color-dark);
+      height: 100vh;
+      display: flex; flex-direction: column;
+      position: relative; z-index: 100;
+      transition: transform var(--transition-base);
+      overflow: hidden;
+    }
+
+    .sidebar::after {
+      content: ''; position: absolute;
+      bottom: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: linear-gradient(135deg, #A4161A 0%, #E63946 100%);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      opacity: 0.08; pointer-events: none;
+    }
+
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 12px;
+      padding: 28px 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      text-decoration: none;
+    }
+
+    .sidebar-logo-text { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .sidebar-logo-text span { color: var(--color-primary); }
+
+    .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+
+    .nav-section-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.3);
+      padding: 8px 20px 4px; margin-top: 8px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 20px; margin: 2px 10px;
+      border-radius: var(--radius-md);
+      color: rgba(255,255,255,0.55);
+      font-size: 0.875rem; font-weight: 500;
+      cursor: pointer; text-decoration: none;
+      transition: all var(--transition-fast);
+      border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); border-left-color: rgba(230,57,70,0.4); }
+    .nav-item.active { background: rgba(230,57,70,0.12); color: var(--color-primary); border-left-color: var(--color-primary); }
+    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.8; }
+    .nav-item.active svg { opacity: 1; }
+
+    .nav-badge {
+      margin-left: auto; background: var(--color-primary); color: #fff;
+      font-size: 0.65rem; font-weight: 700; padding: 1px 6px;
+      border-radius: 20px; min-width: 18px; text-align: center;
+    }
+
+    .sidebar-user {
+      padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .sidebar-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; font-weight: 700; color: #fff;
+      flex-shrink: 0; position: relative;
+    }
+
+    .sidebar-avatar .status-dot {
+      position: absolute; bottom: 1px; right: 1px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #4CAF50; border: 2px solid var(--color-dark);
+    }
+
+    .sidebar-user-info { flex: 1; min-width: 0; }
+    .sidebar-user-name { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-user-role { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+
+    .sidebar-logout { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); padding: 4px; border-radius: 6px; transition: color var(--transition-fast); display: flex; }
+    .sidebar-logout:hover { color: var(--color-primary); }
+    .sidebar-logout svg { width: 16px; height: 16px; }
+
+    /* ── Main Area ────────────────────────────────────────────────────────── */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+    .top-header {
+      background: #fff; border-bottom: 1px solid var(--color-light-gray);
+      padding: 0 28px; height: 64px;
+      display: flex; align-items: center; gap: 16px;
+      flex-shrink: 0; position: relative; z-index: 10;
+    }
+
+    .header-title { font-size: 1.2rem; font-weight: 700; color: var(--color-dark); letter-spacing: -0.02em; }
+
+    .header-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+    .header-btn {
+      width: 38px; height: 38px; border-radius: 50%; border: none;
+      background: var(--color-light);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--color-dark-gray);
+      transition: background var(--transition-fast);
+      position: relative;
+    }
+
+    .header-btn:hover { background: var(--color-light-gray); }
+    .header-btn svg { width: 18px; height: 18px; }
+
+    .notif-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--color-primary); color: #fff;
+      font-size: 0.55rem; font-weight: 700;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .header-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; font-weight: 700; color: #fff;
+      cursor: pointer; border: 2px solid transparent;
+      transition: border-color var(--transition-fast);
+    }
+
+    .header-avatar:hover { border-color: var(--color-primary); }
+
+    .menu-toggle {
+      display: none; width: 36px; height: 36px; border-radius: var(--radius-md);
+      background: var(--color-light); align-items: center; justify-content: center;
+      cursor: pointer; border: none; color: var(--color-dark); flex-shrink: 0;
+    }
+
+    .menu-toggle svg { width: 20px; height: 20px; }
+
+    .content-area { flex: 1; overflow-y: auto; }
+
+    /* ── Profile Header ───────────────────────────────────────────────────── */
+    .profile-header {
+      background: linear-gradient(135deg, #1A1A1A 0%, #2d1118 40%, #A4161A 100%);
+      padding: 40px 36px 36px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: flex-end; gap: 28px;
+    }
+
+    .profile-header::before {
+      content: ''; position: absolute;
+      top: -60px; right: 180px;
+      width: 340px; height: 340px;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      clip-path: polygon(50% 0%, 100% 0%, 50% 100%, 0% 100%);
+      opacity: 0.2; pointer-events: none;
+    }
+
+    .profile-header::after {
+      content: ''; position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 380px;
+      background: linear-gradient(135deg, transparent 0%, rgba(230,57,70,0.08) 100%);
+      clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+      pointer-events: none;
+    }
+
+    .profile-pic-wrapper {
+      position: relative; flex-shrink: 0;
+      width: 110px; height: 110px;
+    }
+
+    .profile-pic-border {
+      position: absolute; inset: -5px;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+      z-index: 0;
+    }
+
+    .profile-pic {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.6rem; font-weight: 700; color: #fff;
+      position: relative; z-index: 1;
+      border: 4px solid #1A1A1A;
+      overflow: hidden;
+    }
+
+    .profile-info { flex: 1; position: relative; z-index: 1; }
+
+    .profile-name {
+      font-size: 1.8rem; font-weight: 800; color: #fff;
+      letter-spacing: -0.04em; margin-bottom: 4px;
+    }
+
+    .profile-role { font-size: 0.9rem; color: rgba(255,255,255,0.55); margin-bottom: 12px; }
+
+    .profile-status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+
+    .online-dot { width: 9px; height: 9px; border-radius: 50%; background: #4CAF50; flex-shrink: 0; }
+
+    .online-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); font-weight: 500; }
+
+    .btn-edit-profile {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.08);
+      color: #fff; font-size: 0.8rem; font-weight: 600;
+      padding: 8px 18px; border-radius: var(--radius-full);
+      cursor: pointer; backdrop-filter: blur(6px);
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-edit-profile:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.6); }
+    .btn-edit-profile svg { width: 14px; height: 14px; }
+
+    /* ── Profile Content ──────────────────────────────────────────────────── */
+    .profile-body { padding: 28px 36px; background: var(--color-light); }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: #fff; border-radius: var(--radius-lg);
+      border: 1px solid var(--color-light-gray);
+      padding: 20px 18px;
+      display: flex; align-items: center; gap: 14px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(164,22,26,0.1), rgba(230,57,70,0.1));
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .stat-icon svg { width: 20px; height: 20px; color: var(--color-primary); }
+
+    .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); letter-spacing: -0.03em; line-height: 1; }
+    .stat-lbl { font-size: 0.72rem; color: var(--color-gray); margin-top: 2px; }
+
+    .star-rating { display: flex; align-items: center; gap: 2px; margin-top: 2px; }
+    .star { color: #f4a261; font-size: 12px; }
+
+    /* Info Cards */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+
+    .info-card {
+      background: #fff; border-radius: var(--radius-lg);
+      border: 1px solid var(--color-light-gray); overflow: hidden;
+    }
+
+    .info-card-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--color-light-gray);
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .info-card-title-accent {
+      width: 3px; height: 18px;
+      background: linear-gradient(180deg, #A4161A, #E63946); border-radius: 2px;
+    }
+
+    .info-card-title { font-size: 0.9rem; font-weight: 700; color: var(--color-dark); }
+
+    .info-row {
+      padding: 14px 20px; border-bottom: 1px solid var(--color-light-gray);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+
+    .info-label { font-size: 0.72rem; font-weight: 600; color: var(--color-gray); text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-value { font-size: 0.875rem; font-weight: 500; color: var(--color-dark); }
+    .info-edit-btn { color: var(--color-primary); padding: 4px; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
+    .info-row:hover .info-edit-btn { opacity: 1; }
+    .info-edit-btn svg { width: 14px; height: 14px; }
+
+    /* Account Section */
+    .account-card {
+      background: #fff; border-radius: var(--radius-lg);
+      border: 1px solid var(--color-light-gray); margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .account-item {
+      padding: 14px 20px; border-bottom: 1px solid var(--color-light-gray);
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; transition: background 0.15s;
+    }
+
+    .account-item:last-child { border-bottom: none; }
+    .account-item:hover { background: var(--color-light); }
+
+    .account-item-left { display: flex; align-items: center; gap: 12px; }
+    .account-item-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--color-light); display: flex; align-items: center; justify-content: center; }
+    .account-item-icon svg { width: 16px; height: 16px; color: var(--color-dark-gray); }
+    .account-item-label { font-size: 0.875rem; font-weight: 600; color: var(--color-dark); }
+    .account-item-desc { font-size: 0.72rem; color: var(--color-gray); margin-top: 1px; }
+
+    .account-item-action { display: flex; align-items: center; gap: 8px; }
+
+    .toggle-switch {
+      width: 42px; height: 24px;
+      background: var(--color-light-gray); border-radius: 12px;
+      position: relative; cursor: pointer; transition: background 0.25s;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch.on { background: var(--color-primary); }
+
+    .toggle-knob {
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      transition: transform 0.25s;
+    }
+
+    .toggle-switch.on .toggle-knob { transform: translateX(18px); }
+
+    .link-red { font-size: 0.8rem; font-weight: 600; color: var(--color-primary); text-decoration: none; }
+    .link-red:hover { color: var(--color-primary-dark); }
+
+    .chevron-right { color: var(--color-gray); }
+    .chevron-right svg { width: 16px; height: 16px; }
+
+    /* Activity Chart */
+    .activity-card {
+      background: #fff; border-radius: var(--radius-lg);
+      border: 1px solid var(--color-light-gray); overflow: hidden; margin-bottom: 28px;
+    }
+
+    .chart-area {
+      padding: 16px 20px 20px;
+      display: flex; align-items: flex-end; gap: 8px;
+      height: 100px;
+    }
+
+    .bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+
+    .bar {
+      width: 100%; border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, #E63946, #A4161A);
+      transition: opacity 0.2s;
+      min-height: 4px;
+    }
+
+    .bar:hover { opacity: 0.7; }
+    .bar.light { background: var(--color-light-gray); }
+
+    .bar-label { font-size: 0.6rem; color: var(--color-gray); }
+
+    .chart-geo-divider {
+      height: 3px; margin: 0 20px;
+      background: linear-gradient(90deg, #A4161A 0%, #E63946 60%, rgba(230,57,70,0.1) 100%);
+      border-radius: 2px;
+    }
+
+    /* Section Dividers */
+    .geo-divider {
+      height: 3px; margin-bottom: 20px;
+      background: linear-gradient(90deg, #A4161A 0%, #E63946 60%, rgba(230,57,70,0.1) 100%);
+      border-radius: 2px;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { position: fixed; left: 0; top: 0; transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: flex; }
+      .profile-header { flex-direction: column; align-items: flex-start; padding: 28px 20px 24px; }
+      .profile-body { padding: 20px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-logo" href="dashboard.html">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" width="36" height="36">
+      <defs>
+        <linearGradient id="sg-a" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#A4161A"/><stop offset="100%" stop-color="#E63946"/>
+        </linearGradient>
+        <linearGradient id="sg-d" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#A4161A" stop-opacity="0.25"/><stop offset="100%" stop-color="#E63946" stop-opacity="0.1"/>
+        </linearGradient>
+      </defs>
+      <polygon points="40,6 68,40 40,74 12,40" fill="url(#sg-d)" stroke="#E63946" stroke-width="1" stroke-opacity="0.3"/>
+      <polygon points="40,10 28,68 38,68 46,28" fill="url(#sg-a)"/>
+      <polygon points="40,10 52,68 42,68 34,28" fill="url(#sg-a)"/>
+      <rect x="27" y="42" width="26" height="8" rx="1" fill="url(#sg-a)"/>
+    </svg>
+    <span class="sidebar-logo-text">Zu<span>Station</span></span>
+  </a>
+
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Main Menu</span>
+
+    <a class="nav-item" href="dashboard.html">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </a>
+
+    <a class="nav-item" href="chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+      Chat
+      <span class="nav-badge">5</span>
+    </a>
+
+    <a class="nav-item" href="call.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+      </svg>
+      Queries
+      <span class="nav-badge">3</span>
+    </a>
+
+    <a class="nav-item" href="contacts.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+      </svg>
+      Contacts
+    </a>
+
+    <span class="nav-section-label" style="margin-top:16px;">Preferences</span>
+
+    <a class="nav-item active" href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      Profile
+    </a>
+
+    <a class="nav-item" href="settings.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      Settings
+    </a>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">JD<span class="status-dot"></span></div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name">John Doe</div>
+      <div class="sidebar-user-role">Support Agent</div>
+    </div>
+    <button class="sidebar-logout" title="Logout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ── Main Area ──────────────────────────────────────────────────────────── -->
+<div class="main-area">
+
+  <header class="top-header">
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <h1 class="header-title">My Profile</h1>
+
+    <div class="header-actions">
+      <button class="header-btn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+        <span class="notif-badge">3</span>
+      </button>
+      <div class="header-avatar" title="John Doe">JD</div>
+    </div>
+  </header>
+
+  <main class="content-area">
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-pic-wrapper">
+        <div class="profile-pic-border"></div>
+        <div class="profile-pic">JD</div>
+      </div>
+      <div class="profile-info">
+        <div class="profile-name">John Doe</div>
+        <div class="profile-role">Support Agent · Customer Service Dept.</div>
+        <div class="profile-status-row">
+          <div class="online-dot"></div>
+          <span class="online-label">Online</span>
+        </div>
+        <button class="btn-edit-profile" onclick="toggleEditMode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          Edit Profile
+        </button>
+      </div>
+    </div>
+
+    <div class="profile-body">
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="stat-val">1,248</div>
+            <div class="stat-lbl">Total Calls</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="stat-val">842</div>
+            <div class="stat-lbl">Chats Handled</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <div class="stat-val">1m 42s</div>
+            <div class="stat-lbl">Avg Response</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="stat-val">4.9</div>
+            <div class="stat-lbl">Rating</div>
+            <div class="star-rating">
+              <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="geo-divider"></div>
+
+      <!-- Info Cards -->
+      <div class="info-grid">
+        <!-- Personal Information -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <div class="info-card-title-accent"></div>
+            <div class="info-card-title">Personal Information</div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Full Name</div>
+              <div class="info-value">John Doe</div>
+            </div>
+            <div class="info-edit-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Email Address</div>
+              <div class="info-value">john.doe@zustation.io</div>
+            </div>
+            <div class="info-edit-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Phone Number</div>
+              <div class="info-value">+1 (555) 012-3456</div>
+            </div>
+            <div class="info-edit-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Location</div>
+              <div class="info-value">San Francisco, CA</div>
+            </div>
+            <div class="info-edit-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional -->
+        <div class="info-card">
+          <div class="info-card-header">
+            <div class="info-card-title-accent"></div>
+            <div class="info-card-title">Professional</div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Department</div>
+              <div class="info-value">Customer Service</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Employee ID</div>
+              <div class="info-value">ZUS-2024-0147</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Date Joined</div>
+              <div class="info-value">March 15, 2022</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div>
+              <div class="info-label">Supervisor</div>
+              <div class="info-value">Maria Chen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Section -->
+      <div class="account-card">
+        <div class="info-card-header">
+          <div class="info-card-title-accent"></div>
+          <div class="info-card-title">Account &amp; Security</div>
+        </div>
+
+        <div class="account-item" onclick="alert('Change password flow')">
+          <div class="account-item-left">
+            <div class="account-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="account-item-label">Change Password</div>
+              <div class="account-item-desc">Last changed 45 days ago</div>
+            </div>
+          </div>
+          <div class="account-item-action">
+            <a class="link-red">Change</a>
+            <div class="chevron-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+
+        <div class="account-item">
+          <div class="account-item-left">
+            <div class="account-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="account-item-label">Two-Factor Authentication</div>
+              <div class="account-item-desc">Protect your account with 2FA</div>
+            </div>
+          </div>
+          <div class="account-item-action" onclick="toggleSwitch(event, this.querySelector('.toggle-switch'))">
+            <div class="toggle-switch on"><div class="toggle-knob"></div></div>
+          </div>
+        </div>
+
+        <div class="account-item">
+          <div class="account-item-left">
+            <div class="account-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <div>
+              <div class="account-item-label">Active Sessions</div>
+              <div class="account-item-desc">2 devices — Chrome on macOS, iOS App</div>
+            </div>
+          </div>
+          <div class="account-item-action">
+            <a class="link-red">Manage</a>
+            <div class="chevron-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Chart -->
+      <div class="activity-card">
+        <div class="info-card-header">
+          <div class="info-card-title-accent"></div>
+          <div class="info-card-title">Call Activity — Last 14 Days</div>
+        </div>
+        <div class="chart-geo-divider"></div>
+        <div class="chart-area">
+          <div class="bar-col"><div class="bar" style="height:55%"></div><div class="bar-label">M</div></div>
+          <div class="bar-col"><div class="bar" style="height:80%"></div><div class="bar-label">T</div></div>
+          <div class="bar-col"><div class="bar" style="height:40%"></div><div class="bar-label">W</div></div>
+          <div class="bar-col"><div class="bar" style="height:95%"></div><div class="bar-label">T</div></div>
+          <div class="bar-col"><div class="bar" style="height:65%"></div><div class="bar-label">F</div></div>
+          <div class="bar-col"><div class="bar light" style="height:20%"></div><div class="bar-label">S</div></div>
+          <div class="bar-col"><div class="bar light" style="height:15%"></div><div class="bar-label">S</div></div>
+          <div class="bar-col"><div class="bar" style="height:70%"></div><div class="bar-label">M</div></div>
+          <div class="bar-col"><div class="bar" style="height:85%"></div><div class="bar-label">T</div></div>
+          <div class="bar-col"><div class="bar" style="height:50%"></div><div class="bar-label">W</div></div>
+          <div class="bar-col"><div class="bar" style="height:90%"></div><div class="bar-label">T</div></div>
+          <div class="bar-col"><div class="bar" style="height:75%"></div><div class="bar-label">F</div></div>
+          <div class="bar-col"><div class="bar light" style="height:25%"></div><div class="bar-label">S</div></div>
+          <div class="bar-col"><div class="bar light" style="height:10%"></div><div class="bar-label">S</div></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+  }
+
+  function toggleSwitch(e, sw) {
+    e.stopPropagation();
+    sw.classList.toggle('on');
+  }
+
+  function toggleEditMode() {
+    alert('Edit profile mode — would open an edit form in production.');
+  }
+</script>
+</body>
+</html>
