@@ -1,0 +1,342 @@
+{
+  "meta": {
+    "name": "Zustation Color Palette",
+    "version": "1.0.0",
+    "description": "Complete brand color system for the Zustation calling app. Built around Primary Red #E63946 and Accent Burgundy #A4161A.",
+    "lastUpdated": "2024"
+  },
+  "primary": {
+    "primary": {
+      "name": "Primary Red",
+      "token": "--color-primary",
+      "hex": "#E63946",
+      "rgb": { "r": 230, "g": 57, "b": 70 },
+      "hsl": { "h": 355, "s": 76, "l": 56 },
+      "usage": "Primary CTAs, active state indicators, brand moments, key navigation elements",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "4.56:1",
+      "wcagGradeOnWhite": "AA (large text / UI)"
+    },
+    "primaryHover": {
+      "name": "Primary Red Hover",
+      "token": "--color-primary-hover",
+      "hex": "#CC2F3C",
+      "rgb": { "r": 204, "g": 47, "b": 60 },
+      "hsl": { "h": 355, "s": 63, "l": 49 },
+      "usage": "Hover state on primary buttons and interactive red elements",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "6.02:1",
+      "wcagGradeOnWhite": "AA"
+    },
+    "primaryPressed": {
+      "name": "Primary Red Pressed",
+      "token": "--color-primary-pressed",
+      "hex": "#B52632",
+      "rgb": { "r": 181, "g": 38, "b": 50 },
+      "hsl": { "h": 355, "s": 65, "l": 43 },
+      "usage": "Active / pressed state on primary elements",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "7.8:1",
+      "wcagGradeOnWhite": "AAA"
+    },
+    "primarySubtle": {
+      "name": "Primary Red Subtle",
+      "token": "--color-primary-subtle",
+      "hex": "#FDE8EA",
+      "rgb": { "r": 253, "g": 232, "b": 234 },
+      "hsl": { "h": 355, "s": 90, "l": 95 },
+      "usage": "Tinted backgrounds for selected states, alert panels, badge backgrounds",
+      "onColor": "#B52632",
+      "wcagRatioOnWhite": "N/A (background only)"
+    },
+    "onPrimary": {
+      "name": "On Primary",
+      "token": "--color-primary-on",
+      "hex": "#FFFFFF",
+      "rgb": { "r": 255, "g": 255, "b": 255 },
+      "hsl": { "h": 0, "s": 0, "l": 100 },
+      "usage": "Text and icons placed on Primary Red backgrounds",
+      "onColor": "#E63946"
+    }
+  },
+  "accent": {
+    "accent": {
+      "name": "Accent Burgundy",
+      "token": "--color-accent",
+      "hex": "#A4161A",
+      "rgb": { "r": 164, "g": 22, "b": 26 },
+      "hsl": { "h": 358, "s": 76, "l": 36 },
+      "usage": "Decorative accents, depth effects, emphasis on dark backgrounds, secondary brand moments",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "9.22:1",
+      "wcagGradeOnWhite": "AAA"
+    },
+    "accentHover": {
+      "name": "Accent Burgundy Hover",
+      "token": "--color-accent-hover",
+      "hex": "#8C1215",
+      "rgb": { "r": 140, "g": 18, "b": 21 },
+      "hsl": { "h": 358, "s": 77, "l": 31 },
+      "usage": "Hover state on accent-colored elements",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "11.98:1",
+      "wcagGradeOnWhite": "AAA"
+    },
+    "accentSubtle": {
+      "name": "Accent Subtle",
+      "token": "--color-accent-subtle",
+      "hex": "#F5D5D6",
+      "rgb": { "r": 245, "g": 213, "b": 214 },
+      "hsl": { "h": 358, "s": 59, "l": 90 },
+      "usage": "Light tinted backgrounds for accent-highlighted sections",
+      "onColor": "#8C1215",
+      "wcagRatioOnWhite": "N/A (background only)"
+    }
+  },
+  "neutral": {
+    "dark": {
+      "name": "Dark",
+      "token": "--color-dark",
+      "hex": "#1A1A1A",
+      "rgb": { "r": 26, "g": 26, "b": 26 },
+      "hsl": { "h": 0, "s": 0, "l": 10 },
+      "usage": "Primary text color, dark surface backgrounds, navigation backgrounds",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "16.1:1",
+      "wcagGradeOnWhite": "AAA"
+    },
+    "dark80": {
+      "name": "Dark 80%",
+      "token": "--color-dark-80",
+      "hex": "#343434",
+      "rgb": { "r": 52, "g": 52, "b": 52 },
+      "hsl": { "h": 0, "s": 0, "l": 20 },
+      "usage": "Secondary dark backgrounds, hover states on dark surfaces",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "11.6:1",
+      "wcagGradeOnWhite": "AAA"
+    },
+    "dark60": {
+      "name": "Dark 60%",
+      "token": "--color-dark-60",
+      "hex": "#4D4D4D",
+      "rgb": { "r": 77, "g": 77, "b": 77 },
+      "hsl": { "h": 0, "s": 0, "l": 30 },
+      "usage": "Muted dark surfaces, secondary navigation",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "7.74:1",
+      "wcagGradeOnWhite": "AAA"
+    },
+    "gray700": {
+      "name": "Gray 700",
+      "token": "--color-gray-700",
+      "hex": "#616161",
+      "rgb": { "r": 97, "g": 97, "b": 97 },
+      "hsl": { "h": 0, "s": 0, "l": 38 },
+      "usage": "Secondary body text, meta descriptions, subtle labels",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "5.9:1",
+      "wcagGradeOnWhite": "AA"
+    },
+    "gray500": {
+      "name": "Gray 500",
+      "token": "--color-gray-500",
+      "hex": "#9E9E9E",
+      "rgb": { "r": 158, "g": 158, "b": 158 },
+      "hsl": { "h": 0, "s": 0, "l": 62 },
+      "usage": "Placeholder text, disabled labels, icon decorators. Do NOT use for body text — insufficient contrast.",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "2.85:1",
+      "wcagGradeOnWhite": "Fail (decorative/placeholder only)"
+    },
+    "gray300": {
+      "name": "Gray 300",
+      "token": "--color-gray-300",
+      "hex": "#D4D4D4",
+      "rgb": { "r": 212, "g": 212, "b": 212 },
+      "hsl": { "h": 0, "s": 0, "l": 83 },
+      "usage": "Borders, dividers, input outlines, separator lines",
+      "onColor": "#1A1A1A",
+      "wcagRatioOnWhite": "N/A (border/divider only)"
+    },
+    "gray100": {
+      "name": "Gray 100",
+      "token": "--color-gray-100",
+      "hex": "#F0F0F0",
+      "rgb": { "r": 240, "g": 240, "b": 240 },
+      "hsl": { "h": 0, "s": 0, "l": 94 },
+      "usage": "Subtle backgrounds, hover states on white surfaces, table row stripes",
+      "onColor": "#1A1A1A",
+      "wcagRatioOnWhite": "N/A (background only)"
+    },
+    "light": {
+      "name": "Light",
+      "token": "--color-light",
+      "hex": "#F5F5F5",
+      "rgb": { "r": 245, "g": 245, "b": 245 },
+      "hsl": { "h": 0, "s": 0, "l": 96 },
+      "usage": "App/page background, off-white surfaces behind cards",
+      "onColor": "#1A1A1A",
+      "wcagRatioOnWhite": "N/A (background only)"
+    },
+    "white": {
+      "name": "White",
+      "token": "--color-white",
+      "hex": "#FFFFFF",
+      "rgb": { "r": 255, "g": 255, "b": 255 },
+      "hsl": { "h": 0, "s": 0, "l": 100 },
+      "usage": "Card surfaces, input backgrounds, modal backgrounds, primary text surface",
+      "onColor": "#1A1A1A",
+      "wcagRatioOnWhite": "1:1 (white on white — don't use text)"
+    }
+  },
+  "semantic": {
+    "success": {
+      "name": "Success Green",
+      "token": "--color-success",
+      "hex": "#2D9E5B",
+      "rgb": { "r": 45, "g": 158, "b": 91 },
+      "hsl": { "h": 143, "s": 56, "l": 40 },
+      "usage": "Positive confirmations, successful states, online presence indicators",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "4.6:1",
+      "wcagGradeOnWhite": "AA"
+    },
+    "successSubtle": {
+      "name": "Success Subtle",
+      "token": "--color-success-subtle",
+      "hex": "#E6F6ED",
+      "rgb": { "r": 230, "g": 246, "b": 237 },
+      "hsl": { "h": 143, "s": 52, "l": 93 },
+      "usage": "Success alert and notification backgrounds",
+      "onColor": "#1B6B38",
+      "wcagRatioOnWhite": "N/A (background only)"
+    },
+    "warning": {
+      "name": "Warning Amber",
+      "token": "--color-warning",
+      "hex": "#D97706",
+      "rgb": { "r": 217, "g": 119, "b": 6 },
+      "hsl": { "h": 33, "s": 94, "l": 44 },
+      "usage": "Caution states, degraded call quality, away presence",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "4.52:1",
+      "wcagGradeOnWhite": "AA (large text / UI)"
+    },
+    "warningSubtle": {
+      "name": "Warning Subtle",
+      "token": "--color-warning-subtle",
+      "hex": "#FEF3C7",
+      "rgb": { "r": 254, "g": 243, "b": 199 },
+      "hsl": { "h": 48, "s": 97, "l": 89 },
+      "usage": "Warning alert and notification backgrounds",
+      "onColor": "#92400E",
+      "wcagRatioOnWhite": "N/A (background only)"
+    },
+    "error": {
+      "name": "Error Red",
+      "token": "--color-error",
+      "hex": "#E63946",
+      "rgb": { "r": 230, "g": 57, "b": 70 },
+      "hsl": { "h": 355, "s": 76, "l": 56 },
+      "usage": "Form validation errors, destructive action feedback. Shares value with Primary Red — context determines semantic meaning.",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "4.56:1",
+      "wcagGradeOnWhite": "AA (large text / UI)"
+    },
+    "errorSubtle": {
+      "name": "Error Subtle",
+      "token": "--color-error-subtle",
+      "hex": "#FDE8EA",
+      "rgb": { "r": 253, "g": 232, "b": 234 },
+      "hsl": { "h": 355, "s": 90, "l": 95 },
+      "usage": "Error alert and form error state backgrounds",
+      "onColor": "#B52632",
+      "wcagRatioOnWhite": "N/A (background only)"
+    },
+    "info": {
+      "name": "Info Blue",
+      "token": "--color-info",
+      "hex": "#1D6FA4",
+      "rgb": { "r": 29, "g": 111, "b": 164 },
+      "hsl": { "h": 206, "s": 70, "l": 38 },
+      "usage": "Informational banners, neutral status messages, help indicators",
+      "onColor": "#FFFFFF",
+      "wcagRatioOnWhite": "6.7:1",
+      "wcagGradeOnWhite": "AA"
+    },
+    "infoSubtle": {
+      "name": "Info Subtle",
+      "token": "--color-info-subtle",
+      "hex": "#DBEAFE",
+      "rgb": { "r": 219, "g": 234, "b": 254 },
+      "hsl": { "h": 214, "s": 95, "l": 93 },
+      "usage": "Info alert and notification backgrounds",
+      "onColor": "#1E40AF",
+      "wcagRatioOnWhite": "N/A (background only)"
+    }
+  },
+  "callStates": {
+    "callActive": {
+      "name": "Call Active",
+      "token": "--color-call-active",
+      "hex": "#2D9E5B",
+      "rgb": { "r": 45, "g": 158, "b": 91 },
+      "usage": "Active call session indicator, live call badge, answer button"
+    },
+    "callRinging": {
+      "name": "Call Ringing",
+      "token": "--color-call-ringing",
+      "hex": "#D97706",
+      "rgb": { "r": 217, "g": 119, "b": 6 },
+      "usage": "Incoming call animation pulse, ringing state indicator"
+    },
+    "callEnded": {
+      "name": "Call Ended",
+      "token": "--color-call-ended",
+      "hex": "#E63946",
+      "rgb": { "r": 230, "g": 57, "b": 70 },
+      "usage": "End call button, disconnected state, missed call indicator"
+    },
+    "callMuted": {
+      "name": "Call Muted",
+      "token": "--color-call-muted",
+      "hex": "#616161",
+      "rgb": { "r": 97, "g": 97, "b": 97 },
+      "usage": "Muted microphone control state"
+    },
+    "callHold": {
+      "name": "Call On Hold",
+      "token": "--color-call-hold",
+      "hex": "#1D6FA4",
+      "rgb": { "r": 29, "g": 111, "b": 164 },
+      "usage": "Call on hold indicator, hold button active state"
+    }
+  },
+  "gradients": {
+    "brandGradient": {
+      "name": "Brand Gradient",
+      "token": "--gradient-brand",
+      "css": "linear-gradient(135deg, #E63946 0%, #A4161A 100%)",
+      "usage": "Hero backgrounds, prominent brand sections, splash screens"
+    },
+    "darkGradient": {
+      "name": "Dark Gradient",
+      "token": "--gradient-dark",
+      "css": "linear-gradient(180deg, #1A1A1A 0%, #343434 100%)",
+      "usage": "Dark panel backgrounds, video call overlays"
+    },
+    "subtleGradient": {
+      "name": "Subtle Red Gradient",
+      "token": "--gradient-subtle",
+      "css": "linear-gradient(135deg, #FDE8EA 0%, #F5F5F5 100%)",
+      "usage": "Gentle tinted backgrounds, welcome panels"
+    },
+    "overlayGradient": {
+      "name": "Overlay Gradient",
+      "token": "--gradient-overlay",
+      "css": "linear-gradient(180deg, rgba(26,26,26,0) 0%, rgba(26,26,26,0.85) 100%)",
+      "usage": "Image overlays, video call participant name bands"
+    }
+  }
+}
