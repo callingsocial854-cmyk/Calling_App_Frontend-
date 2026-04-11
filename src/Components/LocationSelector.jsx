@@ -116,6 +116,8 @@ const selectStyles = {
   valueContainer: (base) => ({
     ...base,
     padding: "2px 8px",
+    minWidth: 0,
+    flex: 1,
   }),
   option: (base, state) => ({
     ...base,
@@ -134,6 +136,11 @@ const selectStyles = {
     color: "#2d3748",
     margin: 0,
     padding: 0,
+    width: "100%",
+    minWidth: "190px",
+    input: {
+      minWidth: "190px !important",
+    },
   }),
   menu: (base) => ({
     ...base,
