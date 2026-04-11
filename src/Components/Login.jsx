@@ -207,7 +207,7 @@ const Login = () => {
                 {registrationStep === 1 && (
                   <>
                     <div className="social-login-buttons top-social">
-                      <button
+                      {/* <button
                         type="button"
                         className="social-btn facebook-btn"
                         onClick={handleFacebookLogin}
@@ -215,7 +215,7 @@ const Login = () => {
                       >
                         <FaFacebook className="social-icon" />
                         Continue with Facebook
-                      </button>
+                      </button> */}
                       <button
                         type="button"
                         className="social-btn google-btn"
