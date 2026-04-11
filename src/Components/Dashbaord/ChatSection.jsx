@@ -274,6 +274,11 @@ const ChatHeader = ({
 
   const agentDetails = useSelector((state) => state.agentData);
 
+  useEffect(() => {
+    console.log("Agent Details Updated:", agentDetails);
+  }, []);
+
+
   const { query } = useSelector((state) => state.query);
 
   useEffect(() => {
@@ -435,7 +440,7 @@ const ChatHeader = ({
                 style={{ cursor: "pointer" }}
                 onClick={() => onShowUserDetails(true)}
               >
-                {agentData?.fullName}{" "}
+                {agentData?.profileName}{" "}
                 <FaStar style={{ color: "#f4b400", fontSize: "15px" }} />
                 <span
                   style={{
@@ -460,7 +465,7 @@ const ChatHeader = ({
             </div>
             <Tooltip
               title={
-                agentDetails?.data?.agent?.isFavorite
+                agentDetails?.data?.profile?.isFavorite
                   ? "Remove from favorites"
                   : "Add to favorites"
               }
@@ -476,7 +481,7 @@ const ChatHeader = ({
                   toggleFavorite(agentDetails?.data?.agent?._id, queryId);
                 }}
               >
-                {agentDetails?.data?.agent?.isFavorite ? (
+                {agentDetails?.data?.profile?.isFavorite ? (
                   <RxHeartFilled
                     style={{ color: "#ff4d4f", fontSize: "32px" }}
                   />

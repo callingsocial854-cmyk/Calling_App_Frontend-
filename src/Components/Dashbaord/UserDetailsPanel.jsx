@@ -589,7 +589,7 @@ const UserProfileSection = ({ currentChat }) => {
     <div className="userAvatarLarge">
       <img
         src={currentChat?.agent?.profileImage || "/images/default-avatar.png"}
-        alt={currentChat?.agent?.name || "Agent"}
+        alt={currentChat?.profile?.profileName || "Agent"}
         onError={(e) => {
           e.target.onerror = null; // infinite loop se bachane ke liye
           e.target.src =
@@ -597,7 +597,7 @@ const UserProfileSection = ({ currentChat }) => {
         }}
       />
     </div>
-    <div className="userNameLarge">{currentChat?.agent?.fullName}</div>
+    <div className="userNameLarge">{currentChat?.profile?.profileName}</div>
 
     <div className="userStatusText">
       {presence.isOnline && "Online"}

@@ -143,7 +143,8 @@ const ChatList = ({
 
   const getMediaList = async () => {
     try {
-      const res = await getUserMediaControls(queryId);
+      const res = await getUserMediaControls(queryId);
+
       setMediaList(res?.data);
     } catch (error) {
       console.log(error);
@@ -172,7 +173,8 @@ const ChatList = ({
     };
 
     const syncQuery = async () => {
-      const query = queryData?.query;
+      const query = queryData?.query;
+
       if (isOnline) {
         if (!query?._id) return;
         await db.query.put(query);
@@ -215,7 +217,8 @@ const ChatList = ({
       );
     };
 
-    const handleUpdateRoom = (data) => {
+    const handleUpdateRoom = (data) => {
+
       setAgentsData((prev) =>
         prev.map((room) => {
           const isCurrentChat = currentChat?.roomId === room.roomId;
@@ -322,8 +325,8 @@ const ChatList = ({
 
     return (
       <div
-        key={chat?.agent?._id}
-        className={`group ${currentChat?.agent?._id === chat?.agent?._id ? "active" : ""}`}
+        key={chat?.profile?._id}
+        className={`group ${currentChat?.profile?._id === chat?.profile?._id ? "active" : ""}`}
         onClick={() => onChatSelect(chat)}
         style={{ marginTop: "10px", marginBottom: "10px" }}
       >
@@ -331,7 +334,7 @@ const ChatList = ({
           <div className="avatar">
             <img
               src={`${file_url}${chat?.agent?.profileImage}`}
-              alt={chat?.agent?.fullName || "Agent"}
+              alt={chat?.profile?.profileName || "Agent"}
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =
@@ -349,9 +352,9 @@ const ChatList = ({
         <div className="chatInfo">
           <div className="chatHeader">
             <p className="GroupName">
-              {chat?.agent.fullName}
+              {chat?.profile.profileName}
 
-              {chat?.agent.avgRating > 0 && (
+              {chat?.profile.avgRating > 0 && (
                 <>
                   <FaStar
                     style={{
@@ -367,7 +370,7 @@ const ChatList = ({
                       fontSize: "10px",
                     }}
                   >
-                    {chat.agent.avgRating}
+                    {chat.profile.avgRating}
                   </span>
                 </>
               )}
@@ -444,7 +447,7 @@ const ChatList = ({
               cursor: "pointer",
               transition: "transform 0.2s ease",
             }}
-            onClick={() => toggleFavorite(chat?.agent._id)}
+            onClick={() => toggleFavorite(chat?.profile._id)}
           >
             {chat?.isFavorite ? (
               <RxHeartFilled style={{ color: "#ff4d4f", fontSize: "20px" }} />
