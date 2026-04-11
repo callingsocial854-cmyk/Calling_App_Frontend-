@@ -14,7 +14,6 @@ import { FiMessageSquare } from "react-icons/fi";
 
 const UserProfile = () => {
   const [activeTab, setActiveTab] = useState("queries");
-  const [isEditing, setIsEditing] = useState(false);
 
   // Sample user data - in real app, this would come from props or context
   const [userData, setUserData] = useState({
@@ -29,12 +28,13 @@ const UserProfile = () => {
     test: "eye-test",
   });
 
+  const [, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     ...userData,
     test: userData.test || "", // Ensure test has a value
   });
 
-  const handleInputChange = (e) => {
+  const _handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -42,14 +42,14 @@ const UserProfile = () => {
     }));
   };
 
-  const handleSaveProfile = (e) => {
+  const _handleSaveProfile = (e) => {
     e.preventDefault();
     setUserData(formData);
     setIsEditing(false);
     console.log("Profile updated:", formData);
   };
 
-  const handleCancelEdit = () => {
+  const _handleCancelEdit = () => {
     setFormData(userData);
     setIsEditing(false);
   };

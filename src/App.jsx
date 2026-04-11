@@ -1,11 +1,10 @@
 import "./App.css";
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-  useLocation,
 } from "react-router-dom";
 
 import Header from "./Components/Header";
@@ -22,9 +21,9 @@ const Login = lazy(() => import("./Components/Login"));
 const Dashboard = lazy(() => import("./Components/Dashbaord/Dashbaord"));
 const Messages = lazy(() => import("./Components/Dashbaord/Messages"));
 const Profile = lazy(() => import("./Components/Dashbaord/Profile"));
-const Notifications = lazy(
-  () => import("./Components/Dashbaord/Notifications"),
-);
+// const Notifications = lazy(
+//   () => import("./Components/Dashbaord/Notifications"),
+// );
 const Support = lazy(() => import("./Components/Dashbaord/Support"));
 const InactiveQueries = lazy(
   () => import("./Components/Dashbaord/InactiveQueries"),
@@ -154,7 +153,7 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route
             path="/notifications"
             element={
               <ProtectedRoute>
@@ -163,7 +162,7 @@ function App() {
                 </ProfileLayout>
               </ProtectedRoute>
             }
-          />
+          /> */}
 
           <Route
             path="/support"

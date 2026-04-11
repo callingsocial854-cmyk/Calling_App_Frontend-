@@ -17,17 +17,14 @@ import {
   TextField,
   InputAdornment,
   Skeleton,
-  Button,
-  alpha,
   useTheme,
   useMediaQuery,
+  Button,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import socket from "../../socket";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchAllQueriesThunk } from "../../features/queryThunks";
+import { useSelector } from "react-redux";
 import { fetchAllQueries } from "../../api/queryApi";
 import db from "../../app/db";
 
@@ -67,7 +64,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const dispatch = useDispatch();
   const [unreadMap, setUnreadMap] = useState({});
   const [queries, setQueries] = useState([]);
   const [loading, setLoading] = useState(true);

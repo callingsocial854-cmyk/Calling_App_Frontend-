@@ -99,7 +99,7 @@ const Profile = () => {
         }
         break;
 
-      case "userEmail":
+      case "userEmail": {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!value.trim()) {
           newErrors.userEmail = "Email is required";
@@ -109,6 +109,7 @@ const Profile = () => {
           delete newErrors.userEmail;
         }
         break;
+      }
 
       case "phone":
         if (!value.trim()) {
@@ -146,7 +147,7 @@ const Profile = () => {
   };
 
   // ✅ Form submission validation
-  const validateForm = () => {
+  const _validateForm = () => {
     const newErrors = {};
 
     // Full Name validation

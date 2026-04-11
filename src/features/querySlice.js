@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   addCommentInQueryThunk,
+  addOrUpdateReviewThunk,
   createQueryThunk,
   fetchAllQueriesThunk,
   fetchQueryById,
   fetchAgentByIdThunk,
+  toggleFavoriteStatusThunk,
+  updateQueryStatusThunk,
 } from "./queryThunks";
 
 const initialState = {

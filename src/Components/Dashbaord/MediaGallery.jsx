@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
   FaArrowLeft,
   FaImages,
@@ -16,7 +16,6 @@ import {
   Tooltip,
   CircularProgress,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 
 const MediaGallery = ({ showMediaGallery, onClose, mediaControlsFiles }) => {
   const [activeFilter, setActiveFilter] = useState("all");

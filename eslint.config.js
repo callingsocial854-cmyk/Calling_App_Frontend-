@@ -5,7 +5,13 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores([
+    'dist',
+    'public/dependencies/**',
+    'DynamicFormTest.jsx',
+    'src/Components/Dashbaord/DynamicFormBackup.jsx',
+    'src/Components/Dashbaord/MessagedBackuo.jsx',
+  ]),
   {
     files: ['**/*.{js,jsx}'],
     extends: [

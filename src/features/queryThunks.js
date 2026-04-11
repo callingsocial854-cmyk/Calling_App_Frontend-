@@ -86,9 +86,9 @@ export const updateQueryStatusThunk = createAsyncThunk(
 
 export const toggleFavoriteStatusThunk = createAsyncThunk(
   "query/toggleFavoriteStatus",
-  async (agentId, { rejectWithValue }) => {
+  async ({ agentId, profileId }, { rejectWithValue }) => {
     try {
-      const res = await toggleFavoriteStatus({ agentId });
+      const res = await toggleFavoriteStatus({ agentId, profileId });
       return res;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -110,12 +110,12 @@ export const addOrUpdateReviewThunk = createAsyncThunk(
 
 export const fetchAgentByIdThunk = createAsyncThunk(
   "query/getAgentById",
-  async (id, { rejectWithValue }) => {
+  async ({ agentId, profileId }, { rejectWithValue }) => {
     try {
-      const res = await getAgentById(id);
-      return res.data;
+      const res = await getAgentById(agentId, profileId);
+      return res;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
-  },
+  }
 );

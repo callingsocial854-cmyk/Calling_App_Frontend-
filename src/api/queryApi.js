@@ -1,14 +1,16 @@
 import axios from "axios";
 import db from "../app/db";
 const baseURL = import.meta.env.VITE_BASE_URL;
-const token = localStorage.getItem("token");
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 export const getQueryById = async (id) => {
   const res = await axios.get(`${baseURL}getQueryById`, {
     params: { id: id },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
   return res.data;
 };
@@ -20,9 +22,7 @@ export const getAgentsForUserQuery = async (queryId, type, search = "") => {
       type,
       ...(search && { search }),
     },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
 
   return res.data;
@@ -32,15 +32,12 @@ export const fetchAllQueries = async (search) => {
   if (navigator.onLine) {
     const res = await axios.get(`${baseURL}getQueries`, {
       params: search,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     });
     await db.queries.clear();
     await db.queries.bulkPut(res.data?.data?.queries || []);
     return res.data;
-  } else {
-    console.log("Offline → loading queries from Dexie");
+  } else {
     const cachedQueries = await db.queries.toArray();
     return cachedQueries;
   }
@@ -48,29 +45,22 @@ export const fetchAllQueries = async (search) => {
 
 export const createQuery = async (queryData) => {
   const res = await axios.post(`${baseURL}createQuery`, queryData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
   return res.data;
 };
 
 export const addCommentToQuery = async (commentData) => {
   const res = await axios.post(`${baseURL}addCommentInQuery`, commentData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
   return res.data;
 };
 
 export const updateQueryStatus = async (statusData) => {
   const res = await axios.post(`${baseURL}updateQueryStatus`, statusData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  console.log(res);
+    headers: getAuthHeaders(),
+  });
   return res.data;
 };
 
@@ -79,9 +69,7 @@ export const toggleFavoriteStatus = async (favoriteData) => {
     `${baseURL}addOrRemoveFavoriteAgent`,
     favoriteData,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     },
   );
   return res.data;
@@ -89,18 +77,14 @@ export const toggleFavoriteStatus = async (favoriteData) => {
 
 export const addOrUpdateReview = async (reviewData) => {
   const res = await axios.post(`${baseURL}addOrUpdateReview`, reviewData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
   return res.data;
 };
 
-export const getAgentById = async (id) => {
-  const res = await axios.get(`${baseURL}getAgentById?agentId=${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+export const getAgentById = async (agentId, profileId) => {
+  const res = await axios.get(`${baseURL}getAgentById?agentId=${agentId}&profileId=${profileId}`, {
+    headers: getAuthHeaders(),
   });
   return res.data;
 };
@@ -112,21 +96,17 @@ export const getMessagesByRoomId = async (
 ) => {
   const res = await axios.get(`${baseURL}getMessagesByRoomId`, {
     params: { roomId, queryId, search: searchQuery },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
   return res.data;
 };
 
-export const toggleCallStatus = async (agentId, roomId, queryId) => {
+export const toggleCallStatus = async (agentId, profileId, roomId) => {
   const res = await axios.post(
     `${baseURL}toggleCallStatus`,
-    { agentId, roomId, queryId },
+    { agentId, profileId, roomId },
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     },
   );
   return res.data;
@@ -137,22 +117,18 @@ export const clearMessages = async (roomId) => {
     `${baseURL}clearChatInUser`,
     { roomId },
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     },
   );
   return res.data;
 };
 
-export const blockedAgent = async (agentId, roomId) => {
+export const blockedAgent = async (agentId, profileId, roomId) => {
   const res = await axios.post(
     `${baseURL}blockedAgent`,
-    { agentId, roomId },
+    { agentId, profileId, roomId },
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     },
   );
   return res.data;
@@ -160,20 +136,16 @@ export const blockedAgent = async (agentId, roomId) => {
 
 export const addSupport = async (supportData) => {
   const res = await axios.post(`${baseURL}addSupportMessage`, supportData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
   return res.data;
 };
 
-export const getAgentByIdInWeb = async (agentId, queryId) => {
+export const getAgentByIdInWeb = async (agentId, profileId, queryId) => {
   const res = await axios.get(
-    `${baseURL}getAgentByIdInWeb?agentId=${agentId}&queryId=${queryId}`,
+    `${baseURL}getAgentByIdInWeb?agentId=${agentId}&profileId=${profileId}&queryId=${queryId}`,
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: getAuthHeaders(),
     },
   );
   return res.data;
@@ -199,9 +171,7 @@ export const sendMessageApi = async ({
   console.log([...formData.entries()]);
 
   const res = await axios.post(`${baseURL}sendMessageApi`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
 
   return res.data;
@@ -210,9 +180,7 @@ export const sendMessageApi = async ({
 export const getUserMediaControls = async (queryId) => {
   const res = await axios.get(`${baseURL}getUserMediaControls`, {
     params: { queryId },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
   });
   return res.data;
 };

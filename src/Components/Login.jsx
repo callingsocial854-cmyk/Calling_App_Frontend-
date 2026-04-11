@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { FaArrowLeft, FaFacebook, FaGoogle } from "react-icons/fa";
 import "./Login.css";
-import { Link, useNavigate } from "react-router-dom";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { Link } from "react-router-dom";
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+} from "firebase/auth";
 import { auth } from "./GoogleAuth";
 import axios from "axios";
 import { Snackbar, Alert } from "@mui/material";
@@ -10,17 +14,11 @@ import { useLocation } from "react-router-dom";
 
 const Login = () => {
   const Base_URL = import.meta.env.VITE_BASE_URL;
-  const navigate = useNavigate();
   const location = useLocation();
   const data = location.state;
-  const [loading, setLoading] = useState({
-    sendOtp: false,
-    verifyOtp: false,
-    resendOtp: false,
-    googleLogin: false,
-  });
-
-  const [activeTab, setActiveTab] = useState("registration");
+  console.log(data);
+  
+  const [activeTab] = useState("registration");
   const [registrationStep, setRegistrationStep] = useState(1);
   const [formData, setFormData] = useState({
     mobile: "",
@@ -48,107 +46,117 @@ const Login = () => {
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
-    if (formData.mobile.length !== 10) return;
-
-    setLoading((prev) => ({ ...prev, sendOtp: true }));
-
     try {
-      const response = await axios.post(`${Base_URL}generateOtp`, {
-        phone: formData.mobile,
-      });
-
-      setOtp(response.data.otp || "");
-      setRegistrationStep(2);
+      if (formData.mobile.length === 10) {
+        const response = await axios.post(`${Base_URL}generateOtp`, {
+          phone: formData.mobile,
+        });
+        console.log("OTP API Response:", response.data);
+        setOtp(response.data.otp || "");
+        setRegistrationStep(2);
+      }
     } catch (error) {
       console.error("Error sending OTP:", error);
-    } finally {
-      setLoading((prev) => ({ ...prev, sendOtp: false }));
     }
   };
 
   const handleResendOTP = async () => {
-    if (formData.mobile.length !== 10) return;
-
-    setLoading((prev) => ({ ...prev, resendOtp: true }));
-
     try {
-      const response = await axios.post(`${Base_URL}resendOtp`, {
-        phone: formData.mobile,
-      });
-
-      setOtp(response.data.otp || "");
-      setSnackbarMessage("OTP Resent Successfully");
-      setSnackbarBar(true);
+      if (formData.mobile.length === 10) {
+        const response = await axios.post(`${Base_URL}resendOtp`, {
+          phone: formData.mobile,
+        });
+        console.log("OTP API Response:", response.data);
+        setOtp(response.data.otp || "");
+        setSnackbarMessage("OTP Resent Successfully");
+        setSnackbarBar(true);
+      }
     } catch (error) {
       console.error("Error sending OTP:", error);
-    } finally {
-      setLoading((prev) => ({ ...prev, resendOtp: false }));
     }
   };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    if (formData.otp.length !== 6) {
-      setSnackbarMessage("Please enter a valid 6-digit OTP");
-      setSnackbarBar(true);
-      return;
-    }
-
-    setLoading((prev) => ({ ...prev, verifyOtp: true }));
-
     try {
+      if (formData.otp.length === 6) {
+        const queryData = {
+          phone: formData.mobile,
+          otp: formData.otp,
+          description: data?.description || "",
+          industry: data?.industry || "",
+          startTime: data?.startTime || "",
+          endTime: data?.endTime || "",
+        };
+
+        const response = await axios.post(`${Base_URL}verifyOtp`, queryData);
+        console.log("Verify OTP API Response:", response.data);
+
+        // Save token and redirect
+        localStorage.setItem("token", response.data.token);
+        setSnackbarMessage(
+          response.data.message || "OTP Verified Successfully"
+        );
+        setSnackbarBar(true);
+        window.location.href = "/dashboard";
+      } else {
+        setSnackbarMessage("Please enter a valid 6-digit OTP");
+        setSnackbarBar(true);
+      }
+    } catch (error) {
+      setSnackbarMessage(
+        error?.response?.data?.message || "OTP Verification Failed"
+      );
+      setSnackbarBar(true);
+      console.error("Error verifying OTP:", error);
+    }
+  };
+
+  const handleFacebookLogin = async () => {
+    const provider = new FacebookAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
       const queryData = {
-        phone: formData.mobile,
-        otp: formData.otp,
+        idToken: idToken,
         description: data?.description || "",
         industry: data?.industry || "",
         startTime: data?.startTime || "",
         endTime: data?.endTime || "",
       };
-
-      const response = await axios.post(`${Base_URL}verifyOtp`, queryData);
-
+      const response = await axios.post(`${Base_URL}socialLogin`, {
+        queryData,
+      });
+      console.log("Google Login API Response:", response.data);
       localStorage.setItem("token", response.data.token);
-      setSnackbarMessage(response.data.message || "OTP Verified Successfully");
-      setSnackbarBar(true);
-
       window.location.href = "/dashboard";
     } catch (error) {
-      setSnackbarMessage(
-        error?.response?.data?.message || "OTP Verification Failed",
-      );
-      setSnackbarBar(true);
-    } finally {
-      setLoading((prev) => ({ ...prev, verifyOtp: false }));
+      console.error("Facebook Sign-In Error:", error);
     }
   };
 
   const handleGoogleLogin = async () => {
-    setLoading((prev) => ({ ...prev, googleLogin: true }));
-
     const provider = new GoogleAuthProvider();
-
     try {
       const result = await signInWithPopup(auth, provider);
+            
       const idToken = await result.user.getIdToken();
-
+      console.log("idToken", idToken);
       const queryData = {
-        idToken,
+        idToken: idToken,
         description: data?.description || "",
         industry: data?.industry || "",
         startTime: data?.startTime || "",
         endTime: data?.endTime || "",
       };
-
       const response = await axios.post(`${Base_URL}socialLogin`, queryData);
-
+      console.log("Google Login API Response:", response.data);
       localStorage.setItem("token", response.data.token);
       window.location.href = "/dashboard";
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-    } finally {
-      setLoading((prev) => ({ ...prev, googleLogin: false }));
     }
+    console.log("Google login initiated");
   };
 
   return (
@@ -156,7 +164,7 @@ const Login = () => {
       <div className="content-wrap">
         <div className="login-content">
           <div className="item-logo">
-            <Link to="/">
+            <Link to="/" >
               <img
                 src="media/newLogo.png"
                 alt="logo"
@@ -174,7 +182,21 @@ const Login = () => {
                 id="registration-tab"
                 role="tabpanel"
               >
-                
+                {/* Registration Steps */}
+                {/* <div className="registration-steps">
+                  <div
+                    className={`step ${registrationStep >= 1 ? "active" : ""}`}
+                  >
+                    <div className="step-number">1</div>
+                    <span>Mobile</span>
+                  </div>
+                  <div
+                    className={`step ${registrationStep >= 2 ? "active" : ""}`}
+                  >
+                    <div className="step-number">2</div>
+                    <span>OTP</span>
+                  </div>
+                </div> */}
 
                 <h3 className="item-title">
                   {registrationStep === 1 && "Sign In or Continue with"}
@@ -187,14 +209,21 @@ const Login = () => {
                     <div className="social-login-buttons top-social">
                       <button
                         type="button"
+                        className="social-btn facebook-btn"
+                        onClick={handleFacebookLogin}
+                        style={{ fontSize: "11px" }}
+                      >
+                        <FaFacebook className="social-icon" />
+                        Continue with Facebook
+                      </button>
+                      <button
+                        type="button"
                         className="social-btn google-btn"
                         onClick={handleGoogleLogin}
-                        disabled={loading.googleLogin}
+                        style={{ fontSize: "11px" }}
                       >
                         <FaGoogle className="social-icon" />
-                        {loading.googleLogin
-                          ? "Please wait..."
-                          : "Continue with Google"}
+                        Continue with Google
                       </button>
                     </div>
 
@@ -210,8 +239,8 @@ const Login = () => {
                     registrationStep === 1
                       ? handleSendOTP
                       : registrationStep === 2
-                        ? handleVerifyOTP
-                        : () => {}
+                      ? handleVerifyOTP
+                      : () => {}
                   }
                 >
                   {/* STEP 1: Mobile Number */}
@@ -237,12 +266,8 @@ const Login = () => {
                       </div>
 
                       <div className="form-group">
-                        <button
-                          type="submit"
-                          className="submit-btn"
-                          disabled={loading.sendOtp}
-                        >
-                          {loading.sendOtp ? "Sending..." : "Send OTP"}
+                        <button type="submit" className="submit-btn">
+                          Send OTP
                         </button>
                       </div>
                     </div>
@@ -253,14 +278,13 @@ const Login = () => {
                     <div className="step-content">
                       <div className="otp-info">
                         <p>OTP sent to +91 {formData.mobile}</p>
-                        {/* <p>OTP: {otp}</p> */}
+                        <p>OTP: {otp}</p>
                         <button
                           type="button"
                           className="resend-otp"
                           onClick={handleResendOTP}
-                          disabled={loading.resendOtp}
                         >
-                          {loading.resendOtp ? "Resending..." : "Resend OTP"}
+                          Resend OTP
                         </button>
                       </div>
 
@@ -281,12 +305,8 @@ const Login = () => {
                       </div>
 
                       <div className="form-group">
-                        <button
-                          type="submit"
-                          className="submit-btn"
-                          disabled={loading.verifyOtp}
-                        >
-                          {loading.verifyOtp ? "Verifying..." : "Verify OTP"}
+                        <button type="submit" className="submit-btn">
+                          Verify OTP
                         </button>
                       </div>
 

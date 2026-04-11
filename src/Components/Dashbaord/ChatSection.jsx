@@ -41,16 +41,13 @@ import { FaImages } from "react-icons/fa";
 import socket from "../../socket";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addCommentInQueryThunk,
   fetchAgentsForUserQuery,
   fetchQueryById,
-  updateQueryStatusThunk,
   fetchAgentByIdThunk,
   toggleFavoriteStatusThunk,
 } from "../../features/queryThunks";
 import {
   blockedAgent,
-  getAgentById,
   getAgentByIdInWeb,
   toggleCallStatus,
 } from "../../api/queryApi";
@@ -90,7 +87,7 @@ const ChatSection = ({
   };
 
   const matches = useMediaQuery("(max-width:600px)");
-  const { query, loading, error } = useSelector((state) => state.query);
+  const { query } = useSelector((state) => state.query);
 
   return (
     <section className="Chat" style={{ width: matches ? "100%" : "67%" }}>
@@ -156,6 +153,13 @@ const ChatSection = ({
   );
 };
 
+const getCurrentChatProfileId = (currentChat) =>
+  currentChat?.profile?._id ||
+  currentChat?.profileId ||
+  currentChat?.agent?.profileId ||
+  currentChat?.data?.profile?._id ||
+  null;
+
 const ChatHeader = ({
   currentChat,
   showChatOptions,
@@ -183,17 +187,24 @@ const ChatHeader = ({
   const [agentData, setAgentData] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [openPreview, setOpenPreview] = useState(false);
-
-  const fetchAgentDetails = async (agentId, queryId) => {
+  const currentProfileId = getCurrentChatProfileId(currentChat);
+  const fetchAgentDetails = async (agentId, currentChat, queryId) => {
     try {
-      const res = await getAgentByIdInWeb(agentId, queryId);
-      console.log(res);
+      const profileId = getCurrentChatProfileId(currentChat);
+      const res = await getAgentByIdInWeb(agentId, profileId, queryId);
+      const profile = res?.data?.profile || {};
+      const agent = res?.data?.agent || {};
+      console.log(messages)
+
       setAgentData((prev) => ({
         ...prev,
-        ...res?.data?.agent,
+        ...agent,
+        ...profile,
+        isOnline: profile?.isOnline,
+        lastSeen: profile?.lastSeen,
       }));
 
-      onBlockChange(res?.data?.agent?.isBlocked);
+      onBlockChange(agent?.isBlocked);
     } catch (error) {
       setAgentData(null);
       console.log(error);
@@ -202,9 +213,13 @@ const ChatHeader = ({
 
   const handleToggleCalls = async () => {
     try {
-      const res = await toggleCallStatus(agentId, currentChat?.roomId, queryId);
-      console.log(res);
-      fetchAgentDetails(agentId, queryId);
+      await toggleCallStatus(
+        agentId,
+        currentProfileId,
+        currentChat?.roomId,
+      );
+
+      fetchAgentDetails(agentId, currentChat, queryId);
       onOptionClick(() => {});
     } catch (error) {
       console.log(error);
@@ -213,10 +228,14 @@ const ChatHeader = ({
 
   const handleBlockAgent = async () => {
     try {
-      const res = await blockedAgent(agentId, currentChat?.roomId);
+      const res = await blockedAgent(
+        agentId,
+        currentProfileId,
+        currentChat?.roomId,
+      );
       const blocked = res?.data?.blocked;
       onBlockChange(blocked);
-      fetchAgentDetails(agentId, queryId);
+      fetchAgentDetails(agentId, currentChat, queryId);
       onOptionClick(() => {});
     } catch (error) {
       console.log(error);
@@ -226,10 +245,10 @@ const ChatHeader = ({
   useEffect(() => {
     if (!socket || !agentId) return;
 
-    socket.emit("getAgentById", { agentId });
+    socket.emit("getAgentById", { agentId, profileId: currentProfileId });
 
     const handleAgentById = (res) => {
-      const data = res?.data?.agent;
+      const data = res?.data?.profile;
       setAgentData((prev) => ({
         ...(prev || {}),
         isOnline: data?.isOnline,
@@ -239,21 +258,23 @@ const ChatHeader = ({
 
     socket.on("agentById", handleAgentById);
 
-    fetchAgentDetails(agentId, queryId);
+    fetchAgentDetails(agentId, currentChat, queryId);
 
     return () => {
       socket.off("agentById", handleAgentById);
     };
-  }, [currentChat, agentId, socket, queryId]);
+  }, [currentChat, agentId, queryId, currentProfileId]);
 
   useEffect(() => {
     dispatch(fetchQueryById(queryId));
-    dispatch(fetchAgentByIdThunk(agentId));
-  }, [currentChat]);
+    if (agentId) {
+      dispatch(fetchAgentByIdThunk({ agentId, profileId: currentProfileId }));
+    }
+  }, [dispatch, currentChat, agentId, queryId, currentProfileId]);
 
   const agentDetails = useSelector((state) => state.agentData);
 
-  const { query, loading, error } = useSelector((state) => state.query);
+  const { query } = useSelector((state) => state.query);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -280,12 +301,14 @@ const ChatHeader = ({
   };
 
   const toggleFavorite = async (agentId) => {
-    const res = await dispatch(toggleFavoriteStatusThunk(agentId));
+    await dispatch(
+      toggleFavoriteStatusThunk({ agentId, profileId: currentProfileId }),
+    );
     await dispatch(
       fetchAgentsForUserQuery({ queryId: query?._id, type: "all" }),
     );
-    await fetchAgentDetails(agentId, queryId);
-    dispatch(fetchAgentByIdThunk(agentId));
+    await fetchAgentDetails(agentId, currentChat, queryId);
+    dispatch(fetchAgentByIdThunk({ agentId, profileId: currentProfileId }));
   };
 
   useEffect(() => {
@@ -306,7 +329,7 @@ const ChatHeader = ({
     return () => {
       socket.off("agentStatusUpdate", handleStatusUpdate);
     };
-  }, [socket, agentData?._id]);
+  }, [agentData?._id]);
 
   const itemData = messages
     .filter(
@@ -674,7 +697,7 @@ const ChatHeader = ({
                             cols={fullScreen ? 2 : isMd ? 3 : 4}
                             rowHeight={fullScreen ? 120 : isMd ? 150 : 164}
                           >
-                            {mediaControl.mediaFiles.map((mediaFile, index) => {
+                            {mediaControl.mediaFiles.map((mediaFile) => {
                               const globalIndex = getGlobalIndex(
                                 mediaControl,
                                 mediaFile,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronDown } from "react-icons/fa";
+import { FaChevronDown, FaPlus, FaMinus } from "react-icons/fa";
 import {
   FormControl,
   RadioGroup,
@@ -20,14 +20,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import Checkbox from "@mui/material/Checkbox";
 import dayjs from "dayjs";
-import { useDispatch } from "react-redux";
 import axios from "axios";
 import LocationSelector from "../LocationSelector";
 
 const DynamicForm = () => {
   const Base_URL = import.meta.env.VITE_BASE_URL;
   const [sector, setSector] = useState("");
-  const [isDescriptionVisible, setIsDescriptionVisible] = useState(false);
+  const [, setIsDescriptionVisible] = useState(false);
   const [isSectorDropdownOpen, setIsSectorDropdownOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [extraDetails, setExtraDetails] = useState("");
@@ -36,6 +35,7 @@ const DynamicForm = () => {
   const [isScheduleVisible, setIsScheduleVisible] = useState(true);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [showOptional, setShowOptional] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryFields, setCategoryFields] = useState({});
   const [loading, setLoading] = useState(false);
@@ -95,6 +95,8 @@ const DynamicForm = () => {
           ...prev,
           [categoryId]: initialFormData,
         }));
+
+        setShowOptional(false);
       }
     } catch (error) {
       console.error("Error fetching category fields:", error);
@@ -171,6 +173,7 @@ const DynamicForm = () => {
     setErrors(newErrors);
 
     // ✅ SCROLL TO FIRST ERROR
+
     if (firstInvalidField) {
       const el = document.getElementById(firstInvalidField);
 
@@ -240,10 +243,12 @@ const DynamicForm = () => {
       if (serviceLabel) parts.push(`${serviceLabel} services`);
     }
 
+    // ✅ City from LocationSelector
     if (locationData?.city) {
       parts.push(`in ${locationData.city}`);
     }
 
+    // ✅ Areas from LocationSelector
     if (locationData?.areas?.length > 0) {
       const areaNames = locationData.areas.map((a) => a.name);
 
@@ -631,18 +636,51 @@ const DynamicForm = () => {
               <div className="loading">Loading form fields...</div>
             ) : (
               <div className="form-fields-container">
-                <div className="form-fields-grid">
-                  <div id="location-section">
-                    <LocationSelector
-                      onChange={setLocationData}
-                      errors={errors}
-                    />
+                {/* Required fields section */}
+                {requiredFields.length > 0 && (
+                  <div className="required-fields-section">
+                    <div className="section-header">
+                      <h4>Required Information</h4>
+                    </div>
+                    <div className="form-fields-grid">
+                      {/* {renderDefaultFields()} */}
+                      <div id="location-section">
+                        <LocationSelector
+                          onChange={setLocationData}
+                          errors={errors}
+                        />
+                      </div>
+                      {requiredFields.map((field) => renderField(field))}
+                    </div>
                   </div>
-                  {requiredFields.map((field) => renderField(field))}
-                  {optionalFields.map((field) => renderField(field))}
-                </div>
+                )}
+
+                {/* Optional fields section */}
+                {optionalFields.length > 0 && (
+                  <div className="optional-fields-section">
+                    <div className="additional-fields-toggle">
+                      <button
+                        type="button"
+                        className="toggle-btn"
+                        onClick={() => setShowOptional(!showOptional)}
+                      >
+                        {showOptional ? <FaMinus /> : <FaPlus />}
+                        <span>
+                          {showOptional ? "Hide" : "Show"} Additional Options
+                        </span>
+                      </button>
+                    </div>
+
+                    {showOptional && (
+                      <div className="optional-fields-grid">
+                        {optionalFields.map((field) => renderField(field))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Submit Button */}
+
                 <div className="submit-section">
                   <button
                     type="button"

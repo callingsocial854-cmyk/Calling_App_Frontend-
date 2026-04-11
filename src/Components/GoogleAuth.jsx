@@ -2,17 +2,16 @@ import { initializeApp } from "firebase/app";
 import {
   getAuth
 } from "firebase/auth";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAm_3EVb0X9YpTD2l3MoDxIBUrI5gx1Dpk",
-  authDomain: "zustation.firebaseapp.com",
-  projectId: "zustation",
-  storageBucket: "zustation.firebasestorage.app",
-  messagingSenderId: "493331901494",
-  appId: "1:493331901494:web:ab4ec9ae90d5effeb2fc97",
-  measurementId: "G-VEMHD1RYHQ"
+  apiKey: "AIzaSyDFKzvvSBolXisPzsBwwovqKiNiztpl9l4",
+  authDomain: "callingapp-9f749.firebaseapp.com",
+  projectId: "callingapp-9f749",
+  storageBucket: "callingapp-9f749.firebasestorage.app",
+  messagingSenderId: "624036941694",
+  appId: "1:624036941694:web:ebe985dcc98b1660082d2f",
+  measurementId: "G-ZY43NGD58R"
 };
 
 // Initialize Firebase

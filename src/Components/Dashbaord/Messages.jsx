@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import "./Messages.css";
 import ChatList from "./ChatList";
 import ChatSection from "./ChatSection";
@@ -6,14 +7,8 @@ import UserDetailsPanel from "./UserDetailsPanel";
 import MediaGallery from "./MediaGallery";
 import MediaPreview from "./MediaPreview";
 import QRCodeModal from "./QRCodeModal";
-import { FaArrowLeft, FaBars } from "react-icons/fa";
 import socket from "../../socket";
-import { useLocation, useParams } from "react-router-dom";
-import {
-  fetchAgentByIdThunk,
-  fetchAgentsForUserQuery,
-  toggleFavoriteStatusThunk,
-} from "../../features/queryThunks";
+import { fetchAgentsForUserQuery } from "../../features/queryThunks";
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearMessages,
@@ -22,8 +17,14 @@ import {
   toggleCallStatus,
 } from "../../api/queryApi";
 
+const getCurrentChatProfileId = (currentChat) =>
+  currentChat?.profile?._id ||
+  currentChat?.profileId ||
+  currentChat?.agent?.profileId ||
+  currentChat?.data?.profile?._id ||
+  null;
+
 const Messages = () => {
-  const [message, setMessage] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,13 +34,11 @@ const Messages = () => {
   const [showMessageSearch, setShowMessageSearch] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showMediaGallery, setShowMediaGallery] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState(null);
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [, setCurrentMediaIndex] = useState(0);
   const [showQRModal, setShowQRModal] = useState(false);
   const [callType, setCallType] = useState("");
   const messagesEndRef = useRef(null);
   const messageContainerRef = useRef(null);
-  const location = useLocation();
   const { queryId } = useParams();
   const dispatch = useDispatch();
   const [currentChat, setCurrentChat] = useState();
@@ -48,13 +47,9 @@ const Messages = () => {
   const [replyToMessage, setReplyToMessage] = useState(null);
   const [callsEnabled, setCallsEnabled] = useState();
   const [mediaControlsFiles, setMediaControlsFiles] = useState([]);
-  const [files, setFiles] = useState([]);
+  const currentProfileId = getCurrentChatProfileId(currentChat);
 
-  const {
-    agents,
-    loading: agentsLoading,
-    error: agentsError,
-  } = useSelector((state) => state.agents);
+  const { agents } = useSelector((state) => state.agents);
 
   const fetchMessages = async (roomId, queryId, search = "") => {
     try {
@@ -71,8 +66,7 @@ const Messages = () => {
 
       setMediaControlsFiles(allMediaControlsFiles);
 
-      const allFiles = freshMessages.flatMap((msg) => msg.files || []);
-      setFiles(allFiles);
+
     } catch (error) {
       console.log(error);
     }
@@ -83,20 +77,18 @@ const Messages = () => {
       setCurrentChat(null);
       return;
     }
-    const firstAgent = agents[0];
-    // setCurrentChat(firstAgent);
+
   }, [agents, queryId]);
 
   useEffect(() => {
     if (!currentChat?.roomId) return;
 
     fetchMessages(currentChat.roomId, queryId, messageSearchQuery);
-  }, [currentChat?.roomId, messageSearchQuery]);
+  }, [currentChat?.roomId, messageSearchQuery, queryId]);
 
-  useEffect(() => {
-    console.log(queryId);
+  useEffect(() => {
     dispatch(fetchAgentsForUserQuery({ queryId }));
-  }, [queryId]);
+  }, [dispatch, queryId]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -175,14 +167,11 @@ const Messages = () => {
         ),
       );
     });
-
-    socket.on("messageDeletedForMe", ({ messageId }) => {
+    const handleMessageDeletedForMe = ({ messageId }) => {
       setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
-    });
+    };
 
-    socket.on("messageDeletedForMe", (data) => {
-      console.log("messageDeletedForMe", data?.messageId);
-    });
+    socket.on("messageDeletedForMe", handleMessageDeletedForMe);
 
     return () => {
       socket.off("messagesByRoomId");
@@ -190,7 +179,7 @@ const Messages = () => {
       socket.off("messagesDelivered");
       socket.off("messageSeen");
       socket.off("messageDeletedForEveryone");
-      socket.off("messageDeletedForMe");
+      socket.off("messageDeletedForMe", handleMessageDeletedForMe);
     };
   }, [currentChat?.roomId]);
 
@@ -278,13 +267,11 @@ const Messages = () => {
   };
 
   const closeMediaGallery = () => {
-    setShowMediaGallery(false);
-    setSelectedMedia(null);
+    setShowMediaGallery(false);
     setCurrentMediaIndex(0);
   };
 
-  const openMediaPreview = (media, index) => {
-    setSelectedMedia(media);
+  const openMediaPreview = (_, index) => {
     setCurrentMediaIndex(index);
   };
 
@@ -311,6 +298,7 @@ const Messages = () => {
     try {
       const res = await toggleCallStatus(
         currentChat?.agent?._id,
+        currentProfileId,
         currentChat?.roomId,
       );
       console.log(res);
@@ -373,8 +361,7 @@ const Messages = () => {
 
           <ChatSection
             currentChat={currentChat}
-            messages={messages}
-            message={message}
+            messages={messages}
             isBlocked={isBlocked}
             showMessageSearch={showMessageSearch}
             messageSearchQuery={messageSearchQuery}

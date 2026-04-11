@@ -15,7 +15,6 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
@@ -46,7 +45,7 @@ import {
 import Tooltip from "@mui/material/Tooltip";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addCommentInQueryThunk,
@@ -64,16 +63,26 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import db from "../../app/db";
 
+const getCurrentChatProfileId = (currentChat) =>
+  currentChat?.profile?._id ||
+  currentChat?.profileId ||
+  currentChat?.agent?.profileId ||
+  currentChat?.data?.profile?._id ||
+  null;
+
+const getChatPresence = (chat) => ({
+  isOnline: chat?.profile?.isOnline ?? chat?.isOnline ?? false,
+  lastSeen: chat?.profile?.lastSeen ?? chat?.lastSeen ?? null,
+});
+
 const ChatList = ({
   currentChat,
-  searchQuery,
   isMobileMenuOpen,
-  onSearchChange,
   onChatSelect,
 }) => {
   const [open, setOpen] = useState(false);
   const [statusQueryModelOpen, setStatusQueryModelOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded] = useState(false);
   const [queryView, setQueryView] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [editTime, setEditTime] = useState(false);
@@ -90,7 +99,6 @@ const ChatList = ({
   const [isMobile, setIsMobile] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-  const location = useLocation();
   const { queryId } = useParams();
   const dispatch = useDispatch();
   const [agentsData, setAgentsData] = useState([]);
@@ -103,6 +111,7 @@ const ChatList = ({
   const [query, setQuery] = useState({});
   const file_url = import.meta.env.VITE_FILE_URL;
   const isOnline = useSelector((state) => state.network.isOnline);
+  const currentProfileId = getCurrentChatProfileId(currentChat);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -121,7 +130,7 @@ const ChatList = ({
         search: debouncedSearch,
       }),
     );
-  }, [queryId, chatFilter, debouncedSearch]);
+  }, [dispatch, queryId, chatFilter, debouncedSearch]);
   const queryData = useSelector((state) => state.query);
 
   const {
@@ -134,8 +143,7 @@ const ChatList = ({
 
   const getMediaList = async () => {
     try {
-      const res = await getUserMediaControls(queryId);
-      console.log("first", res);
+      const res = await getUserMediaControls(queryId);
       setMediaList(res?.data);
     } catch (error) {
       console.log(error);
@@ -164,8 +172,7 @@ const ChatList = ({
     };
 
     const syncQuery = async () => {
-      const query = queryData?.query;
-      console.log(query);
+      const query = queryData?.query;
       if (isOnline) {
         if (!query?._id) return;
         await db.query.put(query);
@@ -178,29 +185,37 @@ const ChatList = ({
 
     syncAgents();
     syncQuery();
-  }, [agents, isOnline, queryData?.query]);
+  }, [agents, isOnline, queryData?.query, queryId]);
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleAgentStatusUpdate = ({ agentId, status, lastSeen }) => {
-      console.log("agentStatusUpdate", { agentId, status, lastSeen });
-
+    const handleAgentStatusUpdate = ({ agentId, profileId, status, lastSeen }) => {
       setAgentsData((prevAgents) =>
-        prevAgents.map((item) =>
-          item.agent._id === agentId
-            ? {
-                ...item,
-                isOnline: status === "online",
-                lastSeen: lastSeen,
-              }
-            : item,
-        ),
+        prevAgents.map((item) => {
+          const itemProfileId = getCurrentChatProfileId(item);
+          const isMatchingProfile = profileId && itemProfileId && profileId === itemProfileId;
+          const isFallbackAgentMatch = !profileId && item.agent._id === agentId;
+
+          if (!isMatchingProfile && !isFallbackAgentMatch) {
+            return item;
+          }
+
+          return {
+            ...item,
+            profile: {
+              ...(item.profile || {}),
+              isOnline: status === "online",
+              lastSeen,
+            },
+            isOnline: status === "online",
+            lastSeen,
+          };
+        }),
       );
     };
 
-    const handleUpdateRoom = (data) => {
-      console.log("update room", data);
+    const handleUpdateRoom = (data) => {
       setAgentsData((prev) =>
         prev.map((room) => {
           const isCurrentChat = currentChat?.roomId === room.roomId;
@@ -232,8 +247,9 @@ const ChatList = ({
     return () => {
       socket.off("agentStatusUpdate", handleAgentStatusUpdate);
       socket.off("updateRoom", handleUpdateRoom);
+      socket.off("updateUnreadCount", handleUpdateRead);
     };
-  }, [socket, currentChat]);
+  }, [currentChat]);
 
   const handleChange = (event, newValue) => {
     setChatFilter(newValue);
@@ -279,9 +295,11 @@ const ChatList = ({
   };
 
   const toggleFavorite = async (agentId) => {
-    const res = await dispatch(toggleFavoriteStatusThunk(agentId));
+    const res = await dispatch(
+      toggleFavoriteStatusThunk({ agentId, profileId: currentProfileId }),
+    );
     await dispatch(fetchAgentsForUserQuery({ queryId, type: chatFilter }));
-    dispatch(fetchAgentByIdThunk(agentId));
+    dispatch(fetchAgentByIdThunk({ agentId, profileId: currentProfileId }));
     setSnackbarMessage(res?.payload?.message);
     setSnackbarBar(true);
   };
@@ -300,6 +318,7 @@ const ChatList = ({
   const renderChatItem = (chat) => {
     const allImages =
       chat?.mediaControls?.flatMap((control) => control.mediaFiles || []) || [];
+    const presence = getChatPresence(chat);
 
     return (
       <div
@@ -323,7 +342,7 @@ const ChatList = ({
             />
           </div>
           <div
-            className={`statusDot ${chat?.isOnline ? "online" : "offline"}`}
+            className={`statusDot ${presence.isOnline ? "online" : "offline"}`}
             style={{ right: "15px" }}
           ></div>
         </div>

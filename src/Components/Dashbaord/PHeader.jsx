@@ -1,11 +1,10 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logo from "../../assets/newLogo.png";
-import profile from "../../assets/chat_5.jpg"
+import profile from "../../assets/chat_5.jpg";
 
 
-const PHeader = () => {
-  const navigate = useNavigate();
+const PHeader = () => {
 
   const handleLogout = () => {
     localStorage.clear();
@@ -29,14 +28,7 @@ const PHeader = () => {
               </div>
             </div>
 
-            <nav id="dropdown" className="template-main-menu">
-                  <button
-                    type="button"
-                    className="mobile-menu-toggle mobile-toggle-close"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <i className="icofont-close" />
-                  </button>
+            <nav id="dropdown" className="template-main-menu">
                   <ul className="menu-content">
                     <li className="header-nav-item">
                       <Link to="/dashboard" className="menu-link active">

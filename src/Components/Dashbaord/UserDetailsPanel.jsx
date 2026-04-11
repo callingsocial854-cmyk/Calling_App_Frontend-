@@ -18,7 +18,6 @@ import {
   Chip,
   useTheme,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { FaThumbsUp } from "react-icons/fa";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,16 +28,26 @@ import {
 import moment from "moment";
 const file_url = import.meta.env.VITE_FILE_URL;
 
+const getCurrentChatProfileId = (currentChat) =>
+  currentChat?.profile?._id ||
+  currentChat?.profileId ||
+  currentChat?.agent?.profileId ||
+  currentChat?.data?.profile?._id ||
+  null;
+
+const getProfilePresence = (currentChat) => ({
+  isOnline: currentChat?.profile?.isOnline ?? currentChat?.isOnline ?? false,
+  lastSeen: currentChat?.profile?.lastSeen ?? currentChat?.lastSeen ?? null,
+});
+
 const UserDetailsPanel = ({
   currentChat,
   mediaControlsFiles,
   showUserDetails,
   onClose,
   onOpenMediaGallery,
-  onMediaPreview,
 }) => {
   if (!showUserDetails) return null;
-  const dispatch = useDispatch();
 
   return (
     <>
@@ -57,7 +66,6 @@ const UserDetailsPanel = ({
           <SharedMediaSection
             mediaControlsFiles={mediaControlsFiles}
             onOpenMediaGallery={onOpenMediaGallery}
-            onMediaPreview={onMediaPreview}
           />
           <RatingReviewSection currentChat={currentChat} />
         </div>
@@ -75,11 +83,17 @@ const RatingReviewSection = ({ currentChat }) => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
   const dispatch = useDispatch();
+  const currentProfileId = getCurrentChatProfileId(currentChat);
 
   useEffect(() => {
-    dispatch(fetchAgentByIdThunk(currentChat?.agent?._id));
-  }, []);
-  const { data, loading, error } = useSelector((state) => state.agentData);
+    dispatch(
+      fetchAgentByIdThunk({
+        agentId: currentChat?.agent?._id,
+        profileId: currentProfileId,
+      }),
+    );
+  }, [dispatch, currentChat?.agent?._id, currentProfileId]);
+  const { data } = useSelector((state) => state.agentData);
 
   const handleSubmitReview = async () => {
     if (userRating === 0) {
@@ -91,10 +105,16 @@ const RatingReviewSection = ({ currentChat }) => {
       rating: userRating,
       review: reviewComment,
       agentId: currentChat?.agent?._id,
+      profileId: currentProfileId,
     };
 
     await dispatch(addOrUpdateReviewThunk(rewiewData));
-    dispatch(fetchAgentByIdThunk(currentChat?.agent?._id));
+    dispatch(
+      fetchAgentByIdThunk({
+        agentId: currentChat?.agent?._id,
+        profileId: currentProfileId,
+      }),
+    );
     // setReviews([newReview, ...reviews]);
     setUserRating(0);
     setReviewComment("");
@@ -104,7 +124,7 @@ const RatingReviewSection = ({ currentChat }) => {
 
   const getRatingDistribution = () => {
     const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    data?.reviews.forEach((review) => {
+    data?.reviews?.forEach((review) => {
       const star = Math.floor(review?.rating);
       distribution[star]++;
     });
@@ -430,7 +450,7 @@ const RatingReviewSection = ({ currentChat }) => {
           </Box>
         ) : (
           <Box sx={{ "& > *": { mb: 2 } }}>
-            {data?.reviews.map((review) => (
+            {data?.reviews?.map((review) => (
               <Box
                 key={review._id}
                 sx={{
@@ -561,7 +581,10 @@ const RatingReviewSection = ({ currentChat }) => {
     </div>
   );
 };
-const UserProfileSection = ({ currentChat }) => (
+const UserProfileSection = ({ currentChat }) => {
+  const presence = getProfilePresence(currentChat);
+
+  return (
   <div className="userProfileSection">
     <div className="userAvatarLarge">
       <img
@@ -577,14 +600,15 @@ const UserProfileSection = ({ currentChat }) => (
     <div className="userNameLarge">{currentChat?.agent?.fullName}</div>
 
     <div className="userStatusText">
-      {currentChat?.isOnline && "Online"}
+      {presence.isOnline && "Online"}
 
-      {!currentChat?.isOnline && currentChat?.lastSeen && (
-        <>Last seen {moment(currentChat.lastSeen).fromNow()}</>
+      {!presence.isOnline && presence.lastSeen && (
+        <>Last seen {moment(presence.lastSeen).fromNow()}</>
       )}
     </div>
   </div>
-);
+  );
+};
 
 const ContactDetails = ({ currentChat }) => (
   <div className="userDetailsSection">
@@ -601,7 +625,6 @@ const ContactDetails = ({ currentChat }) => (
 const SharedMediaSection = ({
   mediaControlsFiles,
   onOpenMediaGallery,
-  onMediaPreview,
 }) => {
   const getType = (file) => {
     if (/\.(jpg|jpeg|png|gif|webp)$/i.test(file)) return "image";
@@ -632,14 +655,12 @@ const SharedMediaSection = ({
                   src={filePath}
                   alt=""
                   style={{ height: "100%", width: "100%", objectFit: "cover" }}
-                  
                 />
               )}
 
               {/* VIDEO */}
               {type === "video" && (
                 <div
-                  
                   style={{
                     height: "100%",
                     width: "100%",
@@ -658,7 +679,6 @@ const SharedMediaSection = ({
               {/* DOCUMENT */}
               {type === "doc" && (
                 <div
-                  
                   style={{
                     height: "100%",
                     width: "100%",

@@ -8,7 +8,7 @@ const token =
 
 const AgentChat = () => {
   const [queries, setQueries] = useState([]);
-  const [selectedQuery, setSelectedQuery] = useState(null);
+  const [selectedQuery] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
