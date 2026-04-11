@@ -204,6 +204,8 @@ const ChatHeader = ({
         lastSeen: profile?.lastSeen,
       }));
 
+
+
       onBlockChange(agent?.isBlocked);
     } catch (error) {
       setAgentData(null);
@@ -465,7 +467,7 @@ const ChatHeader = ({
             </div>
             <Tooltip
               title={
-                agentDetails?.data?.profile?.isFavorite
+                agentData?.isFavorite
                   ? "Remove from favorites"
                   : "Add to favorites"
               }
@@ -481,7 +483,7 @@ const ChatHeader = ({
                   toggleFavorite(agentDetails?.data?.agent?._id, queryId);
                 }}
               >
-                {agentDetails?.data?.profile?.isFavorite ? (
+                {agentData?.isFavorite ? (
                   <RxHeartFilled
                     style={{ color: "#ff4d4f", fontSize: "32px" }}
                   />
