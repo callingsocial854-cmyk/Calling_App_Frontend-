@@ -93,7 +93,8 @@ const RatingReviewSection = ({ currentChat }) => {
       }),
     );
   }, [dispatch, currentChat?.agent?._id, currentProfileId]);
-  const { data } = useSelector((state) => state.agentData);
+  const { data: {data} } = useSelector((state) => state.agentData);
+  console.log("Agent Data in RatingReviewSection:", data.data);
 
   const handleSubmitReview = async () => {
     if (userRating === 0) {
