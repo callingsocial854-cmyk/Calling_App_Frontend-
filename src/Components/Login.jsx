@@ -34,6 +34,11 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [snackbarBar, setSnackbarBar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  
+  // Loading states
+  const [isSendingOTP, setIsSendingOTP] = useState(false);
+  const [isResendingOTP, setIsResendingOTP] = useState(false);
+  const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -45,14 +50,20 @@ const Login = () => {
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
+    
+    if (isSendingOTP) return; // Prevent multiple submissions
+    
     try {
       if (formData.mobile.length === 10) {
+        setIsSendingOTP(true);
         const response = await axios.post(`${Base_URL}generateOtp`, {
           phone: formData.mobile,
         });
         console.log("OTP API Response:", response.data);
         setOtp(response.data.otp || "");
         setRegistrationStep(2);
+        setSnackbarMessage("OTP Sent Successfully");
+        setSnackbarBar(true);
       }
     } catch (error) {
       setSnackbarMessage(
@@ -60,12 +71,17 @@ const Login = () => {
       );
       setSnackbarBar(true);
       console.error("Error sending OTP:", error);
+    } finally {
+      setIsSendingOTP(false);
     }
   };
 
   const handleResendOTP = async () => {
+    if (isResendingOTP) return; // Prevent multiple submissions
+    
     try {
       if (formData.mobile.length === 10) {
+        setIsResendingOTP(true);
         const response = await axios.post(`${Base_URL}resendOtp`, {
           phone: formData.mobile,
         });
@@ -75,14 +91,24 @@ const Login = () => {
         setSnackbarBar(true);
       }
     } catch (error) {
+      setSnackbarMessage(
+        error?.response?.data?.message || "Failed to resend OTP. Please try again."
+      );
+      setSnackbarBar(true);
       console.error("Error sending OTP:", error);
+    } finally {
+      setIsResendingOTP(false);
     }
   };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
+    
+    if (isVerifyingOTP) return; // Prevent multiple submissions
+    
     try {
       if (formData.otp.length === 6) {
+        setIsVerifyingOTP(true);
         const queryData = {
           phone: formData.mobile,
           otp: formData.otp,
@@ -112,6 +138,8 @@ const Login = () => {
       );
       setSnackbarBar(true);
       console.error("Error verifying OTP:", error);
+    } finally {
+      setIsVerifyingOTP(false);
     }
   };
 
@@ -185,22 +213,6 @@ const Login = () => {
                 id="registration-tab"
                 role="tabpanel"
               >
-                {/* Registration Steps */}
-                {/* <div className="registration-steps">
-                  <div
-                    className={`step ${registrationStep >= 1 ? "active" : ""}`}
-                  >
-                    <div className="step-number">1</div>
-                    <span>Mobile</span>
-                  </div>
-                  <div
-                    className={`step ${registrationStep >= 2 ? "active" : ""}`}
-                  >
-                    <div className="step-number">2</div>
-                    <span>OTP</span>
-                  </div>
-                </div> */}
-
                 <h3 className="item-title">
                   {registrationStep === 1 && "Sign In or Continue with"}
                   {registrationStep === 2 && "Verify OTP"}
@@ -210,20 +222,12 @@ const Login = () => {
                 {registrationStep === 1 && (
                   <>
                     <div className="social-login-buttons top-social">
-                      {/* <button
-                        type="button"
-                        className="social-btn facebook-btn"
-                        onClick={handleFacebookLogin}
-                        style={{ fontSize: "11px" }}
-                      >
-                        <FaFacebook className="social-icon" />
-                        Continue with Facebook
-                      </button> */}
                       <button
                         type="button"
                         className="social-btn google-btn"
                         onClick={handleGoogleLogin}
                         style={{ fontSize: "11px" }}
+                        disabled={isSendingOTP}
                       >
                         <FaGoogle className="social-icon" />
                         Continue with Google
@@ -261,6 +265,7 @@ const Login = () => {
                             maxLength="10"
                             pattern="[0-9]{10}"
                             required
+                            disabled={isSendingOTP}
                           />
                         </div>
                         <div className="input-hint">
@@ -269,8 +274,12 @@ const Login = () => {
                       </div>
 
                       <div className="form-group">
-                        <button type="submit" className="submit-btn">
-                          Send OTP
+                        <button 
+                          type="submit" 
+                          className="submit-btn"
+                          disabled={isSendingOTP}
+                        >
+                          {isSendingOTP ? "Sending OTP..." : "Send OTP"}
                         </button>
                       </div>
                     </div>
@@ -281,13 +290,13 @@ const Login = () => {
                     <div className="step-content">
                       <div className="otp-info">
                         <p>OTP sent to +91 {formData.mobile}</p>
-                        {/* <p>OTP: {otp}</p> */}
                         <button
                           type="button"
                           className="resend-otp"
                           onClick={handleResendOTP}
+                          disabled={isResendingOTP}
                         >
-                          Resend OTP
+                          {isResendingOTP ? "Resending..." : "Resend OTP"}
                         </button>
                       </div>
 
@@ -303,13 +312,18 @@ const Login = () => {
                             maxLength="6"
                             pattern="[0-9]{6}"
                             required
+                            disabled={isVerifyingOTP}
                           />
                         </div>
                       </div>
 
                       <div className="form-group">
-                        <button type="submit" className="submit-btn">
-                          Verify OTP
+                        <button 
+                          type="submit" 
+                          className="submit-btn"
+                          disabled={isVerifyingOTP}
+                        >
+                          {isVerifyingOTP ? "Verifying OTP..." : "Verify OTP"}
                         </button>
                       </div>
 
@@ -318,6 +332,7 @@ const Login = () => {
                           type="button"
                           className="back-btn"
                           onClick={() => setRegistrationStep(1)}
+                          disabled={isVerifyingOTP}
                         >
                           <FaArrowLeft /> Change Mobile Number
                         </button>
