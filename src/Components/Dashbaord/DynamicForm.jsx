@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronDown, FaPlus, FaMinus } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
 import {
   FormControl,
   RadioGroup,
@@ -35,7 +35,6 @@ const DynamicForm = () => {
   const [isScheduleVisible, setIsScheduleVisible] = useState(true);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
-  const [showOptional, setShowOptional] = useState(false);
   const [categories, setCategories] = useState([]);
   const [categoryFields, setCategoryFields] = useState({});
   const [loading, setLoading] = useState(false);
@@ -75,6 +74,7 @@ const DynamicForm = () => {
       );
 
       if (response.data.status) {
+        // Sort all fields by order ascending
         const sortedFields = response.data.data.sort(
           (a, b) => a.order - b.order,
         );
@@ -95,8 +95,6 @@ const DynamicForm = () => {
           ...prev,
           [categoryId]: initialFormData,
         }));
-
-        setShowOptional(false);
       }
     } catch (error) {
       console.error("Error fetching category fields:", error);
@@ -136,11 +134,11 @@ const DynamicForm = () => {
     let newErrors = {};
     let firstInvalidField = null;
 
+    // Only validate fields where isRequired === true
     fields.forEach((field) => {
       if (!field.isRequired) return;
 
       const value = data[field.key];
-
       let isEmpty = false;
 
       if (field.fieldType === "checkbox") {
@@ -151,14 +149,13 @@ const DynamicForm = () => {
 
       if (isEmpty) {
         newErrors[field.key] = `${field.label} is required`;
-
         if (!firstInvalidField) {
           firstInvalidField = `field-${field.key}`;
         }
       }
     });
 
-    // ✅ LOCATION VALIDATION
+    // Location is always required (default)
     if (!locationData?.state) {
       newErrors.location = "state";
       firstInvalidField ||= "location-section";
@@ -172,16 +169,9 @@ const DynamicForm = () => {
 
     setErrors(newErrors);
 
-    // ✅ SCROLL TO FIRST ERROR
-
     if (firstInvalidField) {
       const el = document.getElementById(firstInvalidField);
-
-      el?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
       const input = el?.querySelector("input, select, textarea");
       input?.focus();
     }
@@ -243,20 +233,16 @@ const DynamicForm = () => {
       if (serviceLabel) parts.push(`${serviceLabel} services`);
     }
 
-    // ✅ City from LocationSelector
     if (locationData?.city) {
       parts.push(`in ${locationData.city}`);
     }
 
-    // ✅ Areas from LocationSelector
     if (locationData?.areas?.length > 0) {
       const areaNames = locationData.areas.map((a) => a.name);
-
       const areasText =
         areaNames.length === 1
           ? areaNames[0]
           : areaNames.slice(0, -1).join(", ") + " and " + areaNames.slice(-1);
-
       parts.push(`covering ${areasText}`);
     }
 
@@ -264,7 +250,6 @@ const DynamicForm = () => {
 
     fields.forEach((field) => {
       if (field.key === serviceField?.key) return;
-
       const value = formData[field.key];
       if (!value) return;
 
@@ -310,10 +295,7 @@ const DynamicForm = () => {
                 <option value="">Select {field.label}</option>
                 {field.options &&
                   field.options.map((option) => (
-                    <option
-                      key={option._id || option.value}
-                      value={option.value}
-                    >
+                    <option key={option._id || option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
@@ -372,11 +354,7 @@ const DynamicForm = () => {
 
       case "radio":
         return (
-          <div
-            className="form-group"
-            key={field._id}
-            id={`field-${field.key}`}
-          >
+          <div className="form-group" key={field._id} id={`field-${field.key}`}>
             <label className="form-label">
               {field.label}
               {field.isRequired && <span className="required"> *</span>}
@@ -424,7 +402,7 @@ const DynamicForm = () => {
                     className="checkbox-option"
                   >
                     <input
-                      id={field.key}
+                      id={`${field.key}-${option.value}`}
                       type="checkbox"
                       value={option.value}
                       checked={value.includes(option.value)}
@@ -435,15 +413,15 @@ const DynamicForm = () => {
                         handleInputChange(field.key, newValue);
                       }}
                     />
-                    {errors[field.key] && (
-                      <div className="field-error">{errors[field.key]}</div>
-                    )}
                     <label htmlFor={`${field.key}-${option.value}`}>
                       {option.label}
                     </label>
                   </div>
                 ))}
             </div>
+            {errors[field.key] && (
+              <div className="field-error">{errors[field.key]}</div>
+            )}
           </div>
         );
 
@@ -516,7 +494,6 @@ const DynamicForm = () => {
         setIsSectorDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -525,9 +502,7 @@ const DynamicForm = () => {
 
   const handleClickOpen = () => {
     const isValid = validateForm();
-
     if (!isValid) return;
-
     setOpen(true);
   };
 
@@ -535,14 +510,10 @@ const DynamicForm = () => {
     setOpen(false);
   };
 
-  const requiredFields =
+  // All fields sorted by order — no required/optional split
+  const allFields =
     sector && categoryFields[sector]
-      ? categoryFields[sector].filter((field) => field.isRequired)
-      : [];
-
-  const optionalFields =
-    sector && categoryFields[sector]
-      ? categoryFields[sector].filter((field) => !field.isRequired)
+      ? [...categoryFields[sector]].sort((a, b) => a.order - b.order)
       : [];
 
   const handleSubmit = () => {
@@ -563,7 +534,6 @@ const DynamicForm = () => {
       };
     }
     navigate("/login", { state: data });
-
     handleClose();
   };
 
@@ -584,23 +554,18 @@ const DynamicForm = () => {
           <label className="form-label">Select Industry</label>
           <div className="sector-dropdown">
             <div
-              className={`sector-dropdown-toggle ${
-                isSectorDropdownOpen ? "open" : ""
-              }`}
+              className={`sector-dropdown-toggle ${isSectorDropdownOpen ? "open" : ""}`}
               onClick={() => setIsSectorDropdownOpen(!isSectorDropdownOpen)}
             >
               <div className="selected-sector">
                 <span className="selected-sector-text">
                   {sector
-                    ? categories.find((c) => c._id === sector)?.name ||
-                      "Loading..."
+                    ? categories.find((c) => c._id === sector)?.name || "Loading..."
                     : "Choose an Industry..."}
                 </span>
               </div>
               <FaChevronDown
-                className={`dropdown-arrow ${
-                  isSectorDropdownOpen ? "rotate" : ""
-                }`}
+                className={`dropdown-arrow ${isSectorDropdownOpen ? "rotate" : ""}`}
               />
             </div>
 
@@ -609,9 +574,7 @@ const DynamicForm = () => {
                 {categories.map((category) => (
                   <div
                     key={category._id}
-                    className={`sector-dropdown-item ${
-                      sector === category._id ? "selected" : ""
-                    }`}
+                    className={`sector-dropdown-item ${sector === category._id ? "selected" : ""}`}
                     onClick={() => {
                       setSector(category._id);
                       setIsSectorDropdownOpen(false);
@@ -625,7 +588,7 @@ const DynamicForm = () => {
           </div>
         </div>
 
-        {/* Dynamic Form */}
+        {/* Dynamic Form Fields */}
         {sector && categoryFields[sector] && (
           <div className="dynamic-form-content">
             <h3 className="sector-title">
@@ -636,50 +599,18 @@ const DynamicForm = () => {
               <div className="loading">Loading form fields...</div>
             ) : (
               <div className="form-fields-container">
-                {/* Required fields section */}
-                {requiredFields.length > 0 && (
-                  <div className="required-fields-section">
-                    <div className="section-header">
-                      <h4>Required Information</h4>
-                    </div>
-                    <div className="form-fields-grid">
-                      {/* {renderDefaultFields()} */}
-                      <div id="location-section">
-                        <LocationSelector
-                          onChange={setLocationData}
-                          errors={errors}
-                        />
-                      </div>
-                      {requiredFields.map((field) => renderField(field))}
-                    </div>
+                <div className="form-fields-grid">
+                  {/* Location always shown first, always required */}
+                  <div id="location-section">
+                    <LocationSelector
+                      onChange={setLocationData}
+                      errors={errors}
+                    />
                   </div>
-                )}
 
-                {/* Optional fields section */}
-                {optionalFields.length > 0 && (
-                  <div className="optional-fields-section">
-                    <div className="additional-fields-toggle">
-                      <button
-                        type="button"
-                        className="toggle-btn"
-                        onClick={() => setShowOptional(!showOptional)}
-                      >
-                        {showOptional ? <FaMinus /> : <FaPlus />}
-                        <span>
-                          {showOptional ? "Hide" : "Show"} Additional Options
-                        </span>
-                      </button>
-                    </div>
-
-                    {showOptional && (
-                      <div className="optional-fields-grid">
-                        {optionalFields.map((field) => renderField(field))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Submit Button */}
+                  {/* All fields in order sequence */}
+                  {allFields.map((field) => renderField(field))}
+                </div>
 
                 <div className="submit-section">
                   <button

@@ -144,7 +144,6 @@ const ChatList = ({
   const getMediaList = async () => {
     try {
       const res = await getUserMediaControls(queryId);
-
       setMediaList(res?.data);
     } catch (error) {
       console.log(error);
@@ -482,6 +481,7 @@ const ChatList = ({
       if (!acc[agentId]) {
         acc[agentId] = {
           agent: item.senderId,
+          agentProfile: item.agentProfile,
           items: [],
         };
       }
@@ -490,6 +490,8 @@ const ChatList = ({
       return acc;
     }, {});
   }, [mediaList]);
+
+  console.log("groupedByAgent", groupedByAgent);
 
   const handleImageClick = (imgUrl) => {
     const index = flatMedia.findIndex((m) => m.url === imgUrl);
@@ -1294,7 +1296,7 @@ const ChatList = ({
                   }}
                 >
                   <Typography variant="subtitle1" fontWeight="bold">
-                    Agent Name: {group.agent?.fullName || "Unknown"}
+                    Agent Name: {group.agentProfile?.profileName || "Unknown"}
                   </Typography>
                 </Box>
 

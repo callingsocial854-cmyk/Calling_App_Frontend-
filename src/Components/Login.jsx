@@ -16,7 +16,6 @@ const Login = () => {
   const Base_URL = import.meta.env.VITE_BASE_URL;
   const location = useLocation();
   const data = location.state;
-  console.log(data);
   
   const [activeTab] = useState("registration");
   const [registrationStep, setRegistrationStep] = useState(1);
@@ -56,6 +55,10 @@ const Login = () => {
         setRegistrationStep(2);
       }
     } catch (error) {
+      setSnackbarMessage(
+        error?.response?.data?.message || "Failed to send OTP. Please try again."
+      );
+      setSnackbarBar(true);
       console.error("Error sending OTP:", error);
     }
   };
@@ -278,7 +281,7 @@ const Login = () => {
                     <div className="step-content">
                       <div className="otp-info">
                         <p>OTP sent to +91 {formData.mobile}</p>
-                        <p>OTP: {otp}</p>
+                        {/* <p>OTP: {otp}</p> */}
                         <button
                           type="button"
                           className="resend-otp"

@@ -101,7 +101,7 @@ const Dashboard = () => {
     socket.emit("getUnreadCount");
 
     socket.on("getUnreadCountResponse", (res) => {
-      console.log(res);
+      console.log("getUnreadCountResponse",res);
       if (!res?.data) return;
 
       const map = {};
