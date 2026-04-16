@@ -16,6 +16,8 @@ import {
   sendMessageApi,
   toggleCallStatus,
 } from "../../api/queryApi";
+import { FaArrowLeft, FaFacebook, FaGoogle } from "react-icons/fa";
+
 
 const getCurrentChatProfileId = (currentChat) =>
   currentChat?.profile?._id ||
@@ -86,7 +88,8 @@ const Messages = () => {
     fetchMessages(currentChat.roomId, queryId, messageSearchQuery);
   }, [currentChat?.roomId, messageSearchQuery, queryId]);
 
-  useEffect(() => {
+  useEffect(() => {
+
     dispatch(fetchAgentsForUserQuery({ queryId }));
   }, [dispatch, queryId]);
 
@@ -267,7 +270,8 @@ const Messages = () => {
   };
 
   const closeMediaGallery = () => {
-    setShowMediaGallery(false);
+    setShowMediaGallery(false);
+
     setCurrentMediaIndex(0);
   };
 
@@ -361,7 +365,8 @@ const Messages = () => {
 
           <ChatSection
             currentChat={currentChat}
-            messages={messages}
+            messages={messages}
+
             isBlocked={isBlocked}
             showMessageSearch={showMessageSearch}
             messageSearchQuery={messageSearchQuery}
