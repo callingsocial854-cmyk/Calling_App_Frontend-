@@ -195,8 +195,7 @@ const ChatHeader = ({
       const profile = res?.data?.profile || {};
       const agent = res?.data?.agent || {};
       console.log("isBlocked from API:", profile);
-      onBlockChange(profile?.isBlocked);
-
+      
       setAgentData((prev) => ({
         ...prev,
         ...agent,
@@ -204,10 +203,7 @@ const ChatHeader = ({
         isOnline: profile?.isOnline,
         lastSeen: profile?.lastSeen,
       }));
-
-
-
-      onBlockChange(agent?.isBlocked);
+      onBlockChange(profile?.isBlocked);
     } catch (error) {
       setAgentData(null);
       console.log(error);
