@@ -410,13 +410,6 @@ const Messages = () => {
         onMediaPreview={openMediaPreview}
       />
 
-      {/* <MediaPreview
-        selectedMedia={selectedMedia}
-        currentMediaIndex={currentMediaIndex}
-        mediaControlsFiles={mediaControlsFiles}
-        onClose={closeMediaPreview}
-        onNavigate={navigateMedia}
-      /> */}
 
       <QRCodeModal
         isOpen={showQRModal}

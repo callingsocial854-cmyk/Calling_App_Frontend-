@@ -194,7 +194,8 @@ const ChatHeader = ({
       const res = await getAgentByIdInWeb(agentId, profileId, queryId);
       const profile = res?.data?.profile || {};
       const agent = res?.data?.agent || {};
-      console.log(messages)
+      console.log("isBlocked from API:", profile);
+      onBlockChange(profile?.isBlocked);
 
       setAgentData((prev) => ({
         ...prev,
