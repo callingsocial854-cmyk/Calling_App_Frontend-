@@ -1,0 +1,701 @@
+/*
+ * Zustation Geometric Pattern Utilities
+ * Version 1.0.0
+ *
+ * CSS geometric patterns, clip-paths, and accent shapes inspired by the
+ * Zustation "A" logomark. All shapes use sharp angles and diagonal geometry
+ * consistent with the brand's angular identity.
+ *
+ * Usage:
+ *   Apply classes directly to elements, or extend with your own selectors.
+ *   CSS custom properties (--color-*) must be defined in your root stylesheet.
+ */
+
+/* ============================================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================================ */
+
+:root {
+  --color-primary:        #E63946;
+  --color-accent:         #A4161A;
+  --color-primary-subtle: #FDE8EA;
+  --color-dark:           #1A1A1A;
+  --color-dark-80:        #343434;
+  --color-light:          #F5F5F5;
+  --color-white:          #FFFFFF;
+  --color-gray-100:       #F0F0F0;
+  --color-gray-300:       #D4D4D4;
+
+  /* Gradient tokens */
+  --gradient-brand:   linear-gradient(135deg, #E63946 0%, #A4161A 100%);
+  --gradient-dark:    linear-gradient(180deg, #1A1A1A 0%, #343434 100%);
+  --gradient-subtle:  linear-gradient(135deg, #FDE8EA 0%, #F5F5F5 100%);
+  --gradient-overlay: linear-gradient(180deg, rgba(26,26,26,0) 0%, rgba(26,26,26,0.85) 100%);
+}
+
+/* ============================================================
+   CLIP-PATH SHAPES — "A" Motif Geometry
+   ============================================================ */
+
+/**
+ * .clip-apex
+ * An upward-pointing triangle mirroring the negative space inside the "A" logo.
+ * Use as a decorative element, section background, or geometric accent shape.
+ */
+.clip-apex {
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+
+/**
+ * .clip-apex-inverted
+ * A downward-pointing triangle — the "A" apex flipped.
+ */
+.clip-apex-inverted {
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+
+/**
+ * .clip-diagonal-tr
+ * Diagonal cut at the bottom-right, slanting top-left to bottom-right.
+ * Use on hero sections to create a slanted bottom edge.
+ */
+.clip-diagonal-tr {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 56px), 0 100%);
+}
+
+/**
+ * .clip-diagonal-tl
+ * Diagonal cut at the bottom-left.
+ */
+.clip-diagonal-tl {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 56px));
+}
+
+/**
+ * .clip-diagonal-br
+ * Diagonal top-left cut — bottom section starts lower on the left.
+ */
+.clip-diagonal-br {
+  clip-path: polygon(0 56px, 100% 0, 100% 100%, 0 100%);
+}
+
+/**
+ * .clip-diagonal-bl
+ * Diagonal top-right cut.
+ */
+.clip-diagonal-bl {
+  clip-path: polygon(0 0, 100% 56px, 100% 100%, 0 100%);
+}
+
+/**
+ * .clip-diagonal-sm
+ * Smaller diagonal cuts (24px offset) for compact UI elements.
+ */
+.clip-diagonal-sm-tr { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), 0 100%); }
+.clip-diagonal-sm-tl { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 24px)); }
+.clip-diagonal-sm-br { clip-path: polygon(0 24px, 100% 0, 100% 100%, 0 100%); }
+.clip-diagonal-sm-bl { clip-path: polygon(0 0, 100% 24px, 100% 100%, 0 100%); }
+
+/**
+ * .clip-parallelogram
+ * Skewed rectangle — used for highlighted chips, breadcrumbs, step indicators.
+ * The horizontal skew mirrors the diagonal stroke of the "A" letterform.
+ */
+.clip-parallelogram {
+  clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+}
+
+.clip-parallelogram-right {
+  clip-path: polygon(0% 0%, 92% 0%, 100% 100%, 8% 100%);
+}
+
+/**
+ * .clip-chevron
+ * Full chevron shape — pointed on both ends. Used for step/progress indicators.
+ */
+.clip-chevron {
+  clip-path: polygon(
+    0 50%,
+    16px 0,
+    calc(100% - 16px) 0,
+    100% 50%,
+    calc(100% - 16px) 100%,
+    16px 100%
+  );
+}
+
+/**
+ * .clip-arrow-right
+ * Arrow pointing right — used for directional CTAs, navigation indicators.
+ */
+.clip-arrow-right {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%);
+}
+
+/**
+ * .clip-arrow-left
+ * Arrow pointing left.
+ */
+.clip-arrow-left {
+  clip-path: polygon(20px 0, 100% 0, 100% 100%, 20px 100%, 0 50%);
+}
+
+/**
+ * .clip-notch-tr
+ * Rectangle with a triangular notch cut from the top-right corner.
+ */
+.clip-notch-tr {
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+
+/**
+ * .clip-notch-bl
+ * Rectangle with a triangular notch cut from the bottom-left corner.
+ */
+.clip-notch-bl {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+
+/* ============================================================
+   DIAGONAL STRIPE BACKGROUND PATTERNS
+   ============================================================ */
+
+/**
+ * .pattern-stripes-dark
+ * Subtle diagonal red stripes on a dark background.
+ * Use on hero sections, splash screens, or dark panel headers.
+ */
+.pattern-stripes-dark {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(230, 57, 70, 0.12) 8px,
+    rgba(230, 57, 70, 0.12) 9px
+  );
+}
+
+/**
+ * .pattern-stripes-light
+ * Very subtle diagonal stripes on a light background.
+ * Use on app backgrounds or feature card textures.
+ */
+.pattern-stripes-light {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 16px,
+    rgba(26, 26, 26, 0.04) 16px,
+    rgba(26, 26, 26, 0.04) 17px
+  );
+}
+
+/**
+ * .pattern-stripes-red
+ * Diagonal red stripes on a white/light background — strong brand texture.
+ * Use sparingly; best for empty states or illustrative backgrounds.
+ */
+.pattern-stripes-red {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 12px,
+    rgba(230, 57, 70, 0.08) 12px,
+    rgba(230, 57, 70, 0.08) 13px
+  );
+}
+
+/**
+ * .pattern-stripes-bold-dark
+ * Wider, more visible diagonal stripes for graphic/decorative use.
+ */
+.pattern-stripes-bold-dark {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 24px,
+    rgba(230, 57, 70, 0.18) 24px,
+    rgba(230, 57, 70, 0.18) 26px
+  );
+}
+
+/**
+ * .pattern-grid
+ * Subtle square grid pattern for data-dense backgrounds (e.g., dashboards).
+ */
+.pattern-grid {
+  background-image:
+    linear-gradient(rgba(26, 26, 26, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 26, 26, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/**
+ * .pattern-dots
+ * Dot grid pattern — subtle decorative texture.
+ */
+.pattern-dots {
+  background-image: radial-gradient(
+    circle,
+    rgba(26, 26, 26, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 16px 16px;
+}
+
+/**
+ * .pattern-dots-red
+ * Red dot grid — use on light backgrounds for brand-forward textures.
+ */
+.pattern-dots-red {
+  background-image: radial-gradient(
+    circle,
+    rgba(230, 57, 70, 0.15) 1px,
+    transparent 1px
+  );
+  background-size: 16px 16px;
+}
+
+/* ============================================================
+   ANGLED SECTION DIVIDERS (Pseudo-element technique)
+   ============================================================ */
+
+/**
+ * .section-angle-bottom
+ * Adds an angled lower edge to a section, transitioning into the next section.
+ * Set --section-next-bg on the element to match the next section's background.
+ */
+.section-angle-bottom {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-angle-bottom::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background-color: var(--section-next-bg, #F5F5F5);
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+}
+
+/**
+ * .section-angle-top
+ * Adds an angled upper edge — used on sections following an angled section.
+ */
+.section-angle-top {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-angle-top::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background-color: var(--section-prev-bg, #1A1A1A);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+/**
+ * .section-angle-both
+ * Sections with both a cut top and cut bottom edge.
+ * Combined use creates a "floating" angled band.
+ */
+.section-angle-both {
+  clip-path: polygon(0 48px, 100% 0, 100% calc(100% - 48px), 0 100%);
+}
+
+/* ============================================================
+   GEOMETRIC ACCENT SHAPES
+   ============================================================ */
+
+/**
+ * .accent-bar
+ * Diagonal left border accent — used beside headings and featured content.
+ * The slight angle on the bar echoes the brand's diagonal stroke geometry.
+ */
+.accent-bar {
+  position: relative;
+  padding-left: 20px;
+}
+
+.accent-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--color-primary);
+  clip-path: polygon(0 0, 100% 6px, 100% 100%, 0 calc(100% - 6px));
+}
+
+/**
+ * .accent-bar-accent
+ * Same as .accent-bar but uses the Accent Burgundy color.
+ */
+.accent-bar-accent::before {
+  background-color: var(--color-accent);
+}
+
+/**
+ * .geometric-corner-tr
+ * Triangular decorative element positioned at the top-right of a container.
+ * Use as a ::after on a positioned parent with overflow:hidden.
+ */
+.geometric-corner-tr {
+  position: relative;
+  overflow: hidden;
+}
+
+.geometric-corner-tr::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  background: var(--color-primary);
+  opacity: 0.12;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  pointer-events: none;
+}
+
+/**
+ * .geometric-corner-bl
+ * Triangular decorative element at the bottom-left.
+ */
+.geometric-corner-bl {
+  position: relative;
+  overflow: hidden;
+}
+
+.geometric-corner-bl::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  background: var(--color-accent);
+  opacity: 0.1;
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+  pointer-events: none;
+}
+
+/* ============================================================
+   PARALLELOGRAM CHIPS & LABELS
+   ============================================================ */
+
+/**
+ * .chip-geo
+ * A parallelogram-shaped chip/tag. Use for categories, status tags, step labels.
+ */
+.chip-geo {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 16px 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  white-space: nowrap;
+}
+
+.chip-geo-secondary {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.chip-geo-outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.chip-geo-neutral {
+  background-color: var(--color-gray-100);
+  color: var(--color-dark);
+}
+
+/* ============================================================
+   ANGLED PROGRESS STEPS
+   ============================================================ */
+
+/**
+ * .step-geo
+ * Chevron-shaped step indicator for progress / multi-step flows.
+ * Chain multiple .step-geo items in a flex container.
+ */
+.step-geo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 28px;
+  font-size: 13px;
+  font-weight: 600;
+  clip-path: polygon(
+    0 50%,
+    12px 0,
+    calc(100% - 12px) 0,
+    100% 50%,
+    calc(100% - 12px) 100%,
+    12px 100%
+  );
+  background-color: var(--color-gray-100);
+  color: var(--color-dark);
+  cursor: default;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.step-geo:first-child {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 50%,
+    calc(100% - 12px) 100%,
+    0 100%
+  );
+}
+
+.step-geo:last-child {
+  clip-path: polygon(
+    0 50%,
+    12px 0,
+    100% 0,
+    100% 100%,
+    12px 100%
+  );
+}
+
+.step-geo.active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.step-geo.completed {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* ============================================================
+   DECORATIVE BACKGROUND COMPOSITIONS
+   ============================================================ */
+
+/**
+ * .bg-brand-hero
+ * Full brand-gradient background with a subtle diagonal stripe overlay.
+ * Use on hero/splash sections.
+ */
+.bg-brand-hero {
+  background: var(--gradient-brand);
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 20px,
+      rgba(255, 255, 255, 0.04) 20px,
+      rgba(255, 255, 255, 0.04) 21px
+    ),
+    linear-gradient(135deg, #E63946 0%, #A4161A 100%);
+}
+
+/**
+ * .bg-dark-textured
+ * Dark background with a very subtle diagonal texture.
+ */
+.bg-dark-textured {
+  background: var(--color-dark);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 24px,
+    rgba(255, 255, 255, 0.02) 24px,
+    rgba(255, 255, 255, 0.02) 25px
+  );
+}
+
+/**
+ * .bg-light-pattern
+ * Light background with a faint dot grid.
+ */
+.bg-light-pattern {
+  background-color: var(--color-light);
+  background-image: radial-gradient(
+    circle,
+    rgba(26, 26, 26, 0.06) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+/* ============================================================
+   ANGLED BORDERS
+   ============================================================ */
+
+/**
+ * .border-angle-top
+ * Angled top border using a gradient pseudo-element — a diagonal line across the top.
+ */
+.border-angle-top {
+  position: relative;
+}
+
+.border-angle-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary) 0%,
+    var(--color-accent) 100%
+  );
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 50%);
+}
+
+/**
+ * .border-diagonal
+ * A full diagonal line across the element (decorative — pointer-events: none).
+ */
+.border-diagonal {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-diagonal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent calc(50% - 1px),
+    var(--color-gray-300) 50%,
+    transparent calc(50% + 1px)
+  );
+  pointer-events: none;
+}
+
+/* ============================================================
+   CALL UI GEOMETRIC ELEMENTS
+   ============================================================ */
+
+/**
+ * .call-status-bar
+ * Angled status bar for active call screens — sits at the top of the call UI.
+ */
+.call-status-bar {
+  background: var(--gradient-brand);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), 0 100%);
+  padding: 12px 20px 24px;
+  color: #ffffff;
+}
+
+/**
+ * .call-action-strip
+ * Dark angled strip for call action buttons (mute, end call, etc.)
+ */
+.call-action-strip {
+  background: rgba(26, 26, 26, 0.92);
+  clip-path: polygon(0 12px, 100% 0, 100% 100%, 0 100%);
+  padding: 24px 24px 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/**
+ * .incoming-call-pulse
+ * Pulsing ring animation container for incoming call screens.
+ * Apply to a circular element containing the caller's avatar.
+ */
+.incoming-call-pulse {
+  animation: incomingCallPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes incomingCallPulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(217, 119, 6, 0.6),
+      0 0 0 0 rgba(217, 119, 6, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 0 16px rgba(217, 119, 6, 0),
+      0 0 0 32px rgba(217, 119, 6, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(217, 119, 6, 0.6),
+      0 0 0 0 rgba(217, 119, 6, 0.3);
+  }
+}
+
+/**
+ * .active-call-pulse
+ * Green pulse for confirmed active call state.
+ */
+.active-call-pulse {
+  animation: activeCallPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes activeCallPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45, 158, 91, 0.5); }
+  50% { box-shadow: 0 0 0 12px rgba(45, 158, 91, 0); }
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* Skew transforms that complement the geometric language */
+.skew-neg { transform: skewX(-6deg); }
+.skew-pos { transform: skewX(6deg); }
+.skew-neg > * { transform: skewX(6deg); }  /* Un-skew children */
+.skew-pos > * { transform: skewX(-6deg); }
+
+/* Diagonal gradient text (use on short headings only) */
+.text-gradient-brand {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Overflow protection for all clip-path elements */
+[class*="clip-"],
+[class*="pattern-"],
+[class*="section-angle"],
+[class*="geometric-corner"] {
+  -webkit-transform: translateZ(0); /* Safari clip-path rendering fix */
+}
+
+/* Responsive diagonal sizes */
+@media (max-width: 768px) {
+  .clip-diagonal-tr { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 32px), 0 100%); }
+  .clip-diagonal-tl { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 32px)); }
+  .clip-diagonal-br { clip-path: polygon(0 32px, 100% 0, 100% 100%, 0 100%); }
+  .clip-diagonal-bl { clip-path: polygon(0 0, 100% 32px, 100% 100%, 0 100%); }
+  .section-angle-bottom::after { height: 40px; }
+  .section-angle-top::before   { height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .incoming-call-pulse,
+  .active-call-pulse {
+    animation: none;
+  }
+}

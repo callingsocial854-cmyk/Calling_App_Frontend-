@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZuStation — Contacts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      display: flex;
+      background: var(--color-light);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────────────────────── */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 90; backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    .sidebar {
+      width: 240px; flex-shrink: 0; background: var(--color-dark);
+      height: 100vh; display: flex; flex-direction: column;
+      position: relative; z-index: 100;
+      transition: transform var(--transition-base); overflow: hidden;
+    }
+
+    .sidebar::after {
+      content: ''; position: absolute; bottom: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: linear-gradient(135deg, #A4161A 0%, #E63946 100%);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      opacity: 0.08; pointer-events: none;
+    }
+
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 12px;
+      padding: 28px 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.07); text-decoration: none;
+    }
+
+    .sidebar-logo-text { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .sidebar-logo-text span { color: var(--color-primary); }
+
+    .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+
+    .nav-section-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); padding: 8px 20px 4px; margin-top: 8px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 20px; margin: 2px 10px; border-radius: var(--radius-md);
+      color: rgba(255,255,255,0.55); font-size: 0.875rem; font-weight: 500;
+      cursor: pointer; text-decoration: none;
+      transition: all var(--transition-fast); border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); border-left-color: rgba(230,57,70,0.4); }
+    .nav-item.active { background: rgba(230,57,70,0.12); color: var(--color-primary); border-left-color: var(--color-primary); }
+    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.8; }
+    .nav-item.active svg { opacity: 1; }
+
+    .nav-badge {
+      margin-left: auto; background: var(--color-primary); color: #fff;
+      font-size: 0.65rem; font-weight: 700; padding: 1px 6px;
+      border-radius: 20px; min-width: 18px; text-align: center;
+    }
+
+    .sidebar-user {
+      padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .sidebar-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; font-weight: 700; color: #fff;
+      flex-shrink: 0; position: relative;
+    }
+
+    .sidebar-avatar .status-dot {
+      position: absolute; bottom: 1px; right: 1px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #4CAF50; border: 2px solid var(--color-dark);
+    }
+
+    .sidebar-user-info { flex: 1; min-width: 0; }
+    .sidebar-user-name { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-user-role { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+    .sidebar-logout { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); padding: 4px; border-radius: 6px; transition: color var(--transition-fast); display: flex; }
+    .sidebar-logout:hover { color: var(--color-primary); }
+    .sidebar-logout svg { width: 16px; height: 16px; }
+
+    /* ── Main Area ────────────────────────────────────────────────────────── */
+    .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+    .top-header {
+      background: #fff; border-bottom: 1px solid var(--color-light-gray);
+      padding: 0 28px; height: 64px;
+      display: flex; align-items: center; gap: 16px;
+      flex-shrink: 0; z-index: 10;
+    }
+
+    .header-title { font-size: 1.2rem; font-weight: 700; color: var(--color-dark); letter-spacing: -0.02em; }
+
+    .count-badge {
+      background: var(--color-light-gray); color: var(--color-dark-gray);
+      font-size: 0.72rem; font-weight: 700; padding: 2px 8px;
+      border-radius: var(--radius-full);
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+    .btn-add-contact {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      color: #fff; font-size: 0.8rem; font-weight: 600;
+      padding: 9px 18px; border-radius: var(--radius-full);
+      border: none; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(230,57,70,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-add-contact:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230,57,70,0.45); }
+    .btn-add-contact svg { width: 14px; height: 14px; }
+
+    .header-btn {
+      width: 38px; height: 38px; border-radius: 50%; border: none;
+      background: var(--color-light); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--color-dark-gray);
+      transition: background var(--transition-fast); position: relative;
+    }
+
+    .header-btn:hover { background: var(--color-light-gray); }
+    .header-btn svg { width: 18px; height: 18px; }
+
+    .notif-badge {
+      position: absolute; top: 2px; right: 2px;
+      background: var(--color-primary); color: #fff;
+      font-size: 0.55rem; font-weight: 700;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #fff;
+    }
+
+    .header-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; font-weight: 700; color: #fff; cursor: pointer;
+      border: 2px solid transparent; transition: border-color var(--transition-fast);
+    }
+
+    .header-avatar:hover { border-color: var(--color-primary); }
+
+    .menu-toggle {
+      display: none; width: 36px; height: 36px; border-radius: var(--radius-md);
+      background: var(--color-light); align-items: center; justify-content: center;
+      cursor: pointer; border: none; color: var(--color-dark); flex-shrink: 0;
+    }
+
+    .menu-toggle svg { width: 20px; height: 20px; }
+
+    /* ── Contact List Layout ──────────────────────────────────────────────── */
+    .contacts-layout {
+      flex: 1; display: flex; overflow: hidden;
+    }
+
+    .contacts-main {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* Search + Filters Bar */
+    .search-filters {
+      background: #fff; border-bottom: 1px solid var(--color-light-gray);
+      padding: 16px 28px 0;
+    }
+
+    .search-bar {
+      position: relative; margin-bottom: 14px;
+    }
+
+    .search-bar svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; color: var(--color-gray); pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%; padding: 11px 14px 11px 44px;
+      border: 2px solid var(--color-light-gray); border-radius: var(--radius-md);
+      font-size: 0.9rem; background: var(--color-light); color: var(--color-dark);
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(230,57,70,0.12);
+      background: #fff;
+    }
+
+    .search-input::placeholder { color: var(--color-gray); }
+
+    .search-clear {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: var(--color-gray); color: #fff; border: none; border-radius: 50%;
+      width: 20px; height: 20px; display: none; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 12px; line-height: 1;
+    }
+
+    .search-clear.visible { display: flex; }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex; gap: 0;
+    }
+
+    .filter-tab {
+      padding: 10px 18px; font-size: 0.82rem; font-weight: 600;
+      color: var(--color-gray); cursor: pointer; border: none; background: none;
+      border-bottom: 2.5px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .filter-tab:hover { color: var(--color-dark); }
+    .filter-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+
+    /* Contact List */
+    .contact-list {
+      flex: 1; overflow-y: auto; padding: 20px 28px;
+    }
+
+    .alpha-group { margin-bottom: 8px; }
+
+    .alpha-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px; margin-top: 16px;
+    }
+
+    .alpha-header:first-child { margin-top: 0; }
+
+    .alpha-letter {
+      font-size: 1rem; font-weight: 800; color: var(--color-primary);
+      line-height: 1; flex-shrink: 0; width: 20px;
+    }
+
+    .alpha-line {
+      flex: 1; height: 2px;
+      background: linear-gradient(90deg, rgba(230,57,70,0.4) 0%, rgba(230,57,70,0.05) 100%);
+      border-radius: 1px;
+    }
+
+    /* Contact Card */
+    .contact-card {
+      background: #fff; border-radius: var(--radius-lg);
+      border: 1px solid var(--color-light-gray); margin-bottom: 8px;
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .contact-card:hover {
+      border-color: rgba(230,57,70,0.25);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      transform: translateX(2px);
+    }
+
+    .contact-card.selected { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(230,57,70,0.12); }
+
+    .contact-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; font-weight: 700; color: #fff;
+      flex-shrink: 0; position: relative;
+    }
+
+    .contact-status {
+      position: absolute; bottom: 1px; right: 1px;
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .contact-status.online { background: #4CAF50; }
+    .contact-status.offline { background: var(--color-gray); }
+    .contact-status.busy { background: #f4a261; }
+
+    .contact-info { flex: 1; min-width: 0; }
+
+    .contact-name { font-size: 0.9rem; font-weight: 700; color: var(--color-dark); margin-bottom: 2px; }
+    .contact-role { font-size: 0.75rem; color: var(--color-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .contact-phone { font-size: 0.72rem; color: var(--color-dark-gray); margin-top: 2px; font-weight: 500; }
+
+    .contact-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    .contact-action-btn {
+      width: 34px; height: 34px; border-radius: 10px; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.2s, transform 0.2s;
+    }
+
+    .contact-action-btn:hover { transform: scale(1.08); }
+    .contact-action-btn svg { width: 15px; height: 15px; }
+
+    .contact-action-btn.call-btn {
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      box-shadow: 0 3px 10px rgba(230,57,70,0.35);
+    }
+
+    .contact-action-btn.call-btn svg { color: #fff; }
+
+    .contact-action-btn.chat-btn { background: var(--color-light); }
+    .contact-action-btn.chat-btn svg { color: var(--color-dark-gray); }
+    .contact-action-btn.chat-btn:hover { background: var(--color-light-gray); }
+
+    .contact-action-btn.more-btn { background: var(--color-light); }
+    .contact-action-btn.more-btn svg { color: var(--color-dark-gray); }
+    .contact-action-btn.more-btn:hover { background: var(--color-light-gray); }
+
+    /* FAB */
+    .fab {
+      position: fixed; bottom: 32px; right: 32px;
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #A4161A, #E63946);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(230,57,70,0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 50; border: none;
+    }
+
+    .fab:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 10px 28px rgba(230,57,70,0.55); }
+    .fab svg { width: 24px; height: 24px; color: #fff; }
+
+    /* Empty State */
+    .empty-state {
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; padding: 60px 20px; text-align: center;
+    }
+
+    .empty-state.visible { display: flex; }
+    .empty-icon { width: 64px; height: 64px; color: var(--color-light-gray); }
+    .empty-title { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
+    .empty-subtitle { font-size: 0.85rem; color: var(--color-gray); }
+    .empty-link { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); cursor: pointer; text-decoration: none; }
+    .empty-link:hover { color: var(--color-primary-dark); }
+
+    /* ── Detail Panel ─────────────────────────────────────────────────────── */
+    .detail-panel {
+      width: 320px; flex-shrink: 0;
+      background: #fff; border-left: 1px solid var(--color-light-gray);
+      display: flex; flex-direction: column; overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.35s ease;
+      position: relative; z-index: 5;
+    }
+
+    .detail-panel.open { transform: translateX(0); }
+
+    .detail-panel-header {
+      padding: 20px; border-bottom: 1px solid var(--color-light-gray);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .detail-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--color-light); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--color-dark-gray);
+      transition: background 0.2s;
+    }
+
+    .detail-close:hover { background: var(--color-light-gray); }
+    .detail-close svg { width: 16px; height: 16px; }
+
+    .detail-profile {
+      padding: 28px 20px; text-align: center;
+      background: linear-gradient(180deg, var(--color-light) 0%, #fff 100%);
+    }
+
+    .detail-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.75rem; font-weight: 700; color: #fff;
+      box-shadow: 0 4px 16px rgba(230,57,70,0.3);
+    }
+
+    .detail-name { font-size: 1.2rem; font-weight: 800; color: var(--color-dark); letter-spacing: -0.02em; }
+    .detail-role { font-size: 0.8rem; color: var(--color-gray); margin-top: 2px; margin-bottom: 16px; }
+
+    .detail-action-row { display: flex; justify-content: center; gap: 12px; }
+
+    .detail-action {
+      display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer;
+    }
+
+    .detail-action-circle {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .detail-action-circle.call { background: linear-gradient(135deg, #A4161A, #E63946); box-shadow: 0 4px 12px rgba(230,57,70,0.4); }
+    .detail-action-circle.call svg { color: #fff; width: 20px; height: 20px; }
+    .detail-action-circle.chat { background: var(--color-light); }
+    .detail-action-circle.chat svg { color: var(--color-dark-gray); width: 20px; height: 20px; }
+    .detail-action-circle.video { background: var(--color-light); }
+    .detail-action-circle.video svg { color: var(--color-dark-gray); width: 20px; height: 20px; }
+
+    .detail-action-label { font-size: 0.68rem; color: var(--color-gray); font-weight: 500; }
+
+    .detail-section { padding: 16px 20px; border-top: 1px solid var(--color-light-gray); }
+    .detail-section-title {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--color-gray); margin-bottom: 10px;
+    }
+
+    .detail-field { margin-bottom: 10px; }
+    .detail-field-label { font-size: 0.68rem; color: var(--color-gray); margin-bottom: 1px; }
+    .detail-field-value { font-size: 0.85rem; font-weight: 500; color: var(--color-dark); }
+
+    .call-history-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--color-light-gray);
+    }
+
+    .call-history-item:last-child { border-bottom: none; }
+
+    .call-history-icon {
+      width: 30px; height: 30px; border-radius: 8px; background: var(--color-light);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .call-history-icon svg { width: 13px; height: 13px; }
+    .call-history-icon.incoming svg { color: #4CAF50; }
+    .call-history-icon.outgoing svg { color: var(--color-primary); }
+    .call-history-icon.missed svg { color: #f44336; }
+
+    .call-history-info { flex: 1; }
+    .call-history-type { font-size: 0.78rem; font-weight: 600; color: var(--color-dark); }
+    .call-history-date { font-size: 0.68rem; color: var(--color-gray); }
+    .call-history-dur { font-size: 0.72rem; color: var(--color-gray); }
+
+    @media (max-width: 768px) {
+      .sidebar { position: fixed; left: 0; top: 0; transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: flex; }
+      .detail-panel { position: fixed; right: 0; top: 64px; bottom: 0; z-index: 80; box-shadow: -4px 0 20px rgba(0,0,0,0.15); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <a class="sidebar-logo" href="dashboard.html">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" width="36" height="36">
+      <defs>
+        <linearGradient id="sg-a" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#A4161A"/><stop offset="100%" stop-color="#E63946"/>
+        </linearGradient>
+        <linearGradient id="sg-d" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#A4161A" stop-opacity="0.25"/><stop offset="100%" stop-color="#E63946" stop-opacity="0.1"/>
+        </linearGradient>
+      </defs>
+      <polygon points="40,6 68,40 40,74 12,40" fill="url(#sg-d)" stroke="#E63946" stroke-width="1" stroke-opacity="0.3"/>
+      <polygon points="40,10 28,68 38,68 46,28" fill="url(#sg-a)"/>
+      <polygon points="40,10 52,68 42,68 34,28" fill="url(#sg-a)"/>
+      <rect x="27" y="42" width="26" height="8" rx="1" fill="url(#sg-a)"/>
+    </svg>
+    <span class="sidebar-logo-text">Zu<span>Station</span></span>
+  </a>
+
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Main Menu</span>
+    <a class="nav-item" href="dashboard.html">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </a>
+    <a class="nav-item" href="chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+      Chat <span class="nav-badge">5</span>
+    </a>
+    <a class="nav-item" href="call.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+      </svg>
+      Queries <span class="nav-badge">3</span>
+    </a>
+    <a class="nav-item active" href="contacts.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+      </svg>
+      Contacts
+    </a>
+    <span class="nav-section-label" style="margin-top:16px;">Preferences</span>
+    <a class="nav-item" href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      Profile
+    </a>
+    <a class="nav-item" href="settings.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      Settings
+    </a>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="sidebar-avatar">JD<span class="status-dot"></span></div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name">John Doe</div>
+      <div class="sidebar-user-role">Support Agent</div>
+    </div>
+    <button class="sidebar-logout" title="Logout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ── Main Area ──────────────────────────────────────────────────────────── -->
+<div class="main-area">
+
+  <header class="top-header">
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <h1 class="header-title">Contacts</h1>
+    <span class="count-badge" id="contactCount">12 contacts</span>
+    <div class="header-actions">
+      <button class="btn-add-contact" onclick="openAddContact()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Contact
+      </button>
+      <button class="header-btn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+        <span class="notif-badge">3</span>
+      </button>
+      <div class="header-avatar">JD</div>
+    </div>
+  </header>
+
+  <div class="contacts-layout">
+    <div class="contacts-main">
+
+      <!-- Search + Filters -->
+      <div class="search-filters">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search contacts by name, role, or number…" oninput="filterContacts(this.value)" />
+          <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+        </div>
+
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
+          <button class="filter-tab" onclick="setFilter('online', this)">Online</button>
+          <button class="filter-tab" onclick="setFilter('offline', this)">Offline</button>
+          <button class="filter-tab" onclick="setFilter('favorites', this)">Favorites</button>
+        </div>
+      </div>
+
+      <!-- Contact List -->
+      <div class="contact-list" id="contactList">
+
+        <!-- Group A -->
+        <div class="alpha-group" data-group="A">
+          <div class="alpha-header">
+            <div class="alpha-letter">A</div>
+            <div class="alpha-line"></div>
+          </div>
+
+          <div class="contact-card" onclick="openDetail('Alice Nguyen', 'Head of Support', '+1 (555) 201-4892', 'AN', '#457B9D', 'online')" data-status="online">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#457B9D,#5a9bbd);">
+              AN
+              <div class="contact-status online"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Alice Nguyen</div>
+              <div class="contact-role">Head of Support · Customer Service</div>
+              <div class="contact-phone">+1 (555) 201-4892</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+              </button>
+              <button class="contact-action-btn chat-btn" title="Chat" onclick="window.location.href='chat.html'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+              </button>
+              <button class="contact-action-btn more-btn" title="More options">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="contact-card" onclick="openDetail('Arjun Patel', 'Senior Agent', '+1 (555) 304-7721', 'AP', '#2D6A4F', 'offline')" data-status="offline">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#2D6A4F,#40917a);">
+              AP
+              <div class="contact-status offline"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Arjun Patel</div>
+              <div class="contact-role">Senior Agent · Technical Support</div>
+              <div class="contact-phone">+1 (555) 304-7721</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+              </button>
+              <button class="contact-action-btn chat-btn" title="Chat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+              </button>
+              <button class="contact-action-btn more-btn" title="More">
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group B -->
+        <div class="alpha-group" data-group="B">
+          <div class="alpha-header"><div class="alpha-letter">B</div><div class="alpha-line"></div></div>
+
+          <div class="contact-card" onclick="openDetail('Bianca Torres', 'Account Manager', '+1 (555) 401-5530', 'BT', '#E63946', 'online')" data-status="online">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#A4161A,#E63946);">
+              BT <div class="contact-status online"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Bianca Torres</div>
+              <div class="contact-role">Account Manager · Sales Dept.</div>
+              <div class="contact-phone">+1 (555) 401-5530</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group C -->
+        <div class="alpha-group" data-group="C">
+          <div class="alpha-header"><div class="alpha-letter">C</div><div class="alpha-line"></div></div>
+
+          <div class="contact-card" onclick="openDetail('Carlos Rivera', 'QA Specialist', '+1 (555) 512-9843', 'CR', '#6d4c9e', 'busy')" data-status="busy">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#6d4c9e,#9b6fd6);">
+              CR <div class="contact-status busy"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Carlos Rivera</div>
+              <div class="contact-role">QA Specialist · Quality Assurance</div>
+              <div class="contact-phone">+1 (555) 512-9843</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+
+          <div class="contact-card" onclick="openDetail('Chen Wei', 'Team Lead', '+1 (555) 678-2210', 'CW', '#f4a261', 'online')" data-status="online">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#c07628,#f4a261);">
+              CW <div class="contact-status online"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Chen Wei</div>
+              <div class="contact-role">Team Lead · Operations</div>
+              <div class="contact-phone">+1 (555) 678-2210</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group D -->
+        <div class="alpha-group" data-group="D">
+          <div class="alpha-header"><div class="alpha-letter">D</div><div class="alpha-line"></div></div>
+
+          <div class="contact-card" onclick="openDetail('Diana Brooks', 'Customer Rep', '+1 (555) 720-6630', 'DB', '#457B9D', 'offline')" data-status="offline">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#2a5f7e,#457B9D);">
+              DB <div class="contact-status offline"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Diana Brooks</div>
+              <div class="contact-role">Customer Representative · Tier 1</div>
+              <div class="contact-phone">+1 (555) 720-6630</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group M -->
+        <div class="alpha-group" data-group="M">
+          <div class="alpha-header"><div class="alpha-letter">M</div><div class="alpha-line"></div></div>
+
+          <div class="contact-card" onclick="openDetail('Maria Chen', 'Supervisor', '+1 (555) 830-4450', 'MC', '#E63946', 'online')" data-status="online">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#A4161A,#E63946);">
+              MC <div class="contact-status online"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Maria Chen</div>
+              <div class="contact-role">Supervisor · Customer Service</div>
+              <div class="contact-phone">+1 (555) 830-4450</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group S -->
+        <div class="alpha-group" data-group="S">
+          <div class="alpha-header"><div class="alpha-letter">S</div><div class="alpha-line"></div></div>
+
+          <div class="contact-card" onclick="openDetail('Sarah Johnson', 'Support Agent', '+1 (555) 991-0027', 'SJ', '#E63946', 'online')" data-status="online">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#A4161A,#E63946);">
+              SJ <div class="contact-status online"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Sarah Johnson</div>
+              <div class="contact-role">Support Agent · Customer Service</div>
+              <div class="contact-phone">+1 (555) 991-0027</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+
+          <div class="contact-card" onclick="openDetail('Samuel Okonkwo', 'IT Specialist', '+1 (555) 874-3312', 'SO', '#2D6A4F', 'busy')" data-status="busy">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#1a4a33,#2D6A4F);">
+              SO <div class="contact-status busy"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Samuel Okonkwo</div>
+              <div class="contact-role">IT Specialist · Infrastructure</div>
+              <div class="contact-phone">+1 (555) 874-3312</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group T -->
+        <div class="alpha-group" data-group="T">
+          <div class="alpha-header"><div class="alpha-letter">T</div><div class="alpha-line"></div></div>
+
+          <div class="contact-card" onclick="openDetail('Tomás Herrera', 'Data Analyst', '+1 (555) 765-8890', 'TH', '#6d4c9e', 'offline')" data-status="offline">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#4a2d7e,#6d4c9e);">
+              TH <div class="contact-status offline"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Tomás Herrera</div>
+              <div class="contact-role">Data Analyst · Business Intelligence</div>
+              <div class="contact-phone">+1 (555) 765-8890</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group Y -->
+        <div class="alpha-group" data-group="Y">
+          <div class="alpha-header"><div class="alpha-letter">Y</div><div class="alpha-line"></div></div>
+
+          <div class="contact-card" onclick="openDetail('Yuki Tanaka', 'UX Designer', '+1 (555) 900-1123', 'YT', '#457B9D', 'online')" data-status="online">
+            <div class="contact-avatar" style="background:linear-gradient(135deg,#2a5f7e,#457B9D);">
+              YT <div class="contact-status online"></div>
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">Yuki Tanaka</div>
+              <div class="contact-role">UX Designer · Product Team</div>
+              <div class="contact-phone">+1 (555) 900-1123</div>
+            </div>
+            <div class="contact-actions" onclick="event.stopPropagation()">
+              <button class="contact-action-btn call-btn" title="Call" onclick="window.location.href='call.html'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>
+              <button class="contact-action-btn chat-btn" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+              <button class="contact-action-btn more-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            <line x1="1" y1="1" x2="23" y2="23" stroke-width="1"/>
+          </svg>
+          <div class="empty-title">No contacts found</div>
+          <div class="empty-subtitle">Try a different name, role, or phone number</div>
+          <a class="empty-link" onclick="clearSearch()">Clear search</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Detail Panel ──────────────────────────────────────────────────── -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-panel-header">
+        <span style="font-size:0.85rem;font-weight:700;color:var(--color-dark);">Contact Details</span>
+        <button class="detail-close" onclick="closeDetail()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="detail-profile">
+        <div class="detail-avatar" id="detailAvatar" style="background:linear-gradient(135deg,#A4161A,#E63946);">SJ</div>
+        <div class="detail-name" id="detailName">Sarah Johnson</div>
+        <div class="detail-role" id="detailRole">Support Agent</div>
+
+        <div class="detail-action-row">
+          <div class="detail-action" onclick="window.location.href='call.html'">
+            <div class="detail-action-circle call">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+            </div>
+            <span class="detail-action-label">Call</span>
+          </div>
+
+          <div class="detail-action" onclick="window.location.href='chat.html'">
+            <div class="detail-action-circle chat">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </div>
+            <span class="detail-action-label">Message</span>
+          </div>
+
+          <div class="detail-action">
+            <div class="detail-action-circle video">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>
+            </div>
+            <span class="detail-action-label">Video</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Contact Info</div>
+        <div class="detail-field">
+          <div class="detail-field-label">Phone</div>
+          <div class="detail-field-value" id="detailPhone">+1 (555) 991-0027</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-field-label">Email</div>
+          <div class="detail-field-value">sarah.j@zustation.io</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-field-label">Department</div>
+          <div class="detail-field-value">Customer Service</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-field-label">Location</div>
+          <div class="detail-field-value">New York, NY</div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Recent Calls</div>
+
+        <div class="call-history-item">
+          <div class="call-history-icon incoming">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="19 12 5 12"/><polyline points="12 5 5 12 12 19"/>
+            </svg>
+          </div>
+          <div class="call-history-info">
+            <div class="call-history-type">Incoming Call</div>
+            <div class="call-history-date">Today, 10:32 AM</div>
+          </div>
+          <div class="call-history-dur">4m 22s</div>
+        </div>
+
+        <div class="call-history-item">
+          <div class="call-history-icon outgoing">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="5 12 19 12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+          <div class="call-history-info">
+            <div class="call-history-type">Outgoing Call</div>
+            <div class="call-history-date">Yesterday, 3:15 PM</div>
+          </div>
+          <div class="call-history-dur">12m 09s</div>
+        </div>
+
+        <div class="call-history-item">
+          <div class="call-history-icon missed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="1" y1="1" x2="23" y2="23"/>
+              <path d="M9 9A5 5 0 0115.9 15.9"/>
+            </svg>
+          </div>
+          <div class="call-history-info">
+            <div class="call-history-type" style="color:#f44336;">Missed Call</div>
+            <div class="call-history-date">Nov 28, 9:05 AM</div>
+          </div>
+          <div class="call-history-dur">—</div>
+        </div>
+
+        <div class="call-history-item">
+          <div class="call-history-icon incoming">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="19 12 5 12"/><polyline points="12 5 5 12 12 19"/>
+            </svg>
+          </div>
+          <div class="call-history-info">
+            <div class="call-history-type">Incoming Call</div>
+            <div class="call-history-date">Nov 27, 2:40 PM</div>
+          </div>
+          <div class="call-history-dur">7m 55s</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="openAddContact()" aria-label="Add contact">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+</button>
+
+<script>
+  let activeFilter = 'all';
+  let searchQuery  = '';
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('active');
+  }
+
+  function setFilter(filter, btn) {
+    activeFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function filterContacts(val) {
+    searchQuery = val.toLowerCase();
+    document.getElementById('searchClear').classList.toggle('visible', val.length > 0);
+    applyFilters();
+  }
+
+  function clearSearch() {
+    const input = document.getElementById('searchInput');
+    input.value = '';
+    searchQuery = '';
+    document.getElementById('searchClear').classList.remove('visible');
+    applyFilters();
+    input.focus();
+  }
+
+  function applyFilters() {
+    const cards = document.querySelectorAll('.contact-card');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const name   = card.querySelector('.contact-name').textContent.toLowerCase();
+      const role   = card.querySelector('.contact-role').textContent.toLowerCase();
+      const phone  = card.querySelector('.contact-phone').textContent.toLowerCase();
+      const status = card.dataset.status;
+
+      const matchesSearch = !searchQuery || name.includes(searchQuery) || role.includes(searchQuery) || phone.includes(searchQuery);
+      const matchesFilter = activeFilter === 'all'
+        || (activeFilter === 'online'  && status === 'online')
+        || (activeFilter === 'offline' && (status === 'offline' || status === 'busy'))
+        || (activeFilter === 'favorites' && ['Alice Nguyen','Maria Chen','Sarah Johnson'].some(n => name.includes(n.toLowerCase())));
+
+      const show = matchesSearch && matchesFilter;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    // Hide empty alpha groups
+    document.querySelectorAll('.alpha-group').forEach(group => {
+      const visibleCards = Array.from(group.querySelectorAll('.contact-card')).some(c => c.style.display !== 'none');
+      group.style.display = visibleCards ? '' : 'none';
+    });
+
+    document.getElementById('emptyState').classList.toggle('visible', visible === 0);
+    document.getElementById('contactCount').textContent = `${visible} contact${visible !== 1 ? 's' : ''}`;
+  }
+
+  function openDetail(name, role, phone, initials, color, status) {
+    document.querySelectorAll('.contact-card').forEach(c => c.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+
+    document.getElementById('detailName').textContent  = name;
+    document.getElementById('detailRole').textContent  = role;
+    document.getElementById('detailPhone').textContent = phone;
+    document.getElementById('detailAvatar').textContent = initials;
+    document.getElementById('detailAvatar').style.background = `linear-gradient(135deg, ${color}99, ${color})`;
+
+    document.getElementById('detailPanel').classList.add('open');
+  }
+
+  function closeDetail() {
+    document.getElementById('detailPanel').classList.remove('open');
+    document.querySelectorAll('.contact-card').forEach(c => c.classList.remove('selected'));
+  }
+
+  function openAddContact() {
+    alert('Add Contact modal — would open a form in production.');
+  }
+</script>
+</body>
+</html>

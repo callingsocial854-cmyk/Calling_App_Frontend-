@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="grad-a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A4161A"/>
+      <stop offset="100%" stop-color="#E63946"/>
+    </linearGradient>
+    <linearGradient id="grad-diamond" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A4161A" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#E63946" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="grad-crossbar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A4161A"/>
+      <stop offset="100%" stop-color="#E63946"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Geometric diamond accent behind the A -->
+  <polygon
+    points="40,6 68,40 40,74 12,40"
+    fill="url(#grad-diamond)"
+    stroke="#E63946"
+    stroke-width="1"
+    stroke-opacity="0.22"
+  />
+
+  <!-- Left leg of A -->
+  <polygon
+    points="40,10 28,68 38,68 46,28"
+    fill="url(#grad-a)"
+  />
+
+  <!-- Right leg of A -->
+  <polygon
+    points="40,10 52,68 42,68 34,28"
+    fill="url(#grad-a)"
+  />
+
+  <!-- Crossbar -->
+  <rect
+    x="27"
+    y="42"
+    width="26"
+    height="8"
+    rx="1"
+    fill="url(#grad-crossbar)"
+  />
+
+  <!-- Small geometric accent diamond at apex -->
+  <polygon
+    points="40,10 44,18 40,22 36,18"
+    fill="#FFFFFF"
+    fill-opacity="0.22"
+  />
+</svg>

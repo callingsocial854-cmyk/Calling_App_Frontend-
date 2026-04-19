@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button Components | ZuStation Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../mockups/styles.css">
+<link rel="stylesheet" href="components.css">
+<style>
+body{background:#F5F5F5;font-family:'Inter',sans-serif;margin:0;}
+.ds-topnav{background:#fff;border-bottom:1px solid #E8E8E8;padding:12px 24px;display:flex;align-items:center;gap:24px;position:sticky;top:0;z-index:100;}
+.ds-topnav .logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;color:#1A1A1A;font-size:15px;margin-right:16px;}
+.ds-topnav .logo img{height:32px;width:32px;}
+.ds-topnav a{text-decoration:none;color:#4A4A4A;font-size:14px;font-weight:500;padding:6px 12px;border-radius:6px;transition:all .2s;}
+.ds-topnav a:hover,.ds-topnav a.active{background:#FFF0F1;color:#E63946;}
+.ds-topnav .back{margin-left:auto;color:#9E9E9E;font-size:13px;}
+.page-title{padding:32px 32px 0;font-size:28px;font-weight:700;color:#1A1A1A;}
+.page-subtitle{padding:4px 32px 24px;color:#9E9E9E;font-size:15px;}
+.section{background:#fff;border-radius:12px;margin:0 32px 24px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.section-title{font-size:13px;font-weight:600;color:#9E9E9E;text-transform:uppercase;letter-spacing:.08em;margin:0 0 16px;}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:8px;}
+.cls-tag{font-size:11px;color:#9E9E9E;background:#F5F5F5;padding:2px 8px;border-radius:4px;font-family:monospace;margin-top:4px;display:inline-block;}
+.item-wrap{display:flex;flex-direction:column;gap:4px;align-items:flex-start;}
+</style>
+</head>
+<body>
+<nav class="ds-topnav">
+  <a href="../mockups/dashboard.html" class="logo">
+    <img src="../mockups/assets/logo.svg" alt="ZuStation">ZuStation DS
+  </a>
+  <a href="buttons.html" class="active">Buttons</a>
+  <a href="inputs.html">Inputs</a>
+  <a href="cards.html">Cards</a>
+  <a href="navigation.html">Navigation</a>
+  <a href="../mockups/dashboard.html" class="back">← Back to Mockups</a>
+</nav>
+
+<div class="page-title">Button Components</div>
+<div class="page-subtitle">All button variants for the ZuStation design system.</div>
+
+<!-- Primary Buttons -->
+<div class="section">
+  <div class="section-title">Primary Buttons</div>
+  <div class="btn-row">
+    <div class="item-wrap"><button class="btn-primary">Sign In</button><span class="cls-tag">.btn-primary</span></div>
+    <div class="item-wrap"><button class="btn-primary" style="opacity:.7;cursor:not-allowed" disabled>Disabled</button><span class="cls-tag">.btn-primary [disabled]</span></div>
+    <div class="item-wrap">
+      <button class="btn-primary" id="loadBtn" onclick="this.innerHTML='<span style=\'display:flex;align-items:center;gap:6px\'><svg width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' style=\'animation:spin .8s linear infinite\'><path d=\'M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4\'/></svg>Loading...</span>';setTimeout(()=>this.innerHTML=\'Done ✓\',1500)">Loading State</button>
+      <span class="cls-tag">.btn-primary (loading)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Secondary & Outlined -->
+<div class="section">
+  <div class="section-title">Secondary &amp; Outlined Buttons</div>
+  <div class="btn-row">
+    <div class="item-wrap"><button class="btn-secondary">Secondary</button><span class="cls-tag">.btn-secondary</span></div>
+    <div class="item-wrap"><button class="btn-outlined">Outlined</button><span class="cls-tag">.btn-outlined</span></div>
+    <div class="item-wrap"><button class="btn-ghost">Ghost</button><span class="cls-tag">.btn-ghost</span></div>
+  </div>
+</div>
+
+<!-- Danger -->
+<div class="section">
+  <div class="section-title">Danger &amp; Warning Buttons</div>
+  <div class="btn-row">
+    <div class="item-wrap"><button class="btn-danger">Delete Account</button><span class="cls-tag">.btn-danger</span></div>
+    <div class="item-wrap"><button class="btn-outlined" style="color:#F4A261;border-color:#F4A261;">Warning Action</button><span class="cls-tag">.btn-outlined (warning)</span></div>
+  </div>
+</div>
+
+<!-- Size Variants -->
+<div class="section">
+  <div class="section-title">Size Variants</div>
+  <div class="btn-row" style="align-items:center;">
+    <div class="item-wrap"><button class="btn-primary btn-sm">Small</button><span class="cls-tag">.btn-sm</span></div>
+    <div class="item-wrap"><button class="btn-primary">Default</button><span class="cls-tag">default</span></div>
+    <div class="item-wrap"><button class="btn-primary btn-lg">Large</button><span class="cls-tag">.btn-lg</span></div>
+  </div>
+</div>
+
+<!-- Icon Buttons -->
+<div class="section">
+  <div class="section-title">Icon Buttons</div>
+  <div class="btn-row">
+    <div class="item-wrap">
+      <button class="btn-primary" style="display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        Call Now
+      </button>
+      <span class="cls-tag">.btn-primary (icon + text)</span>
+    </div>
+    <div class="item-wrap">
+      <button class="btn-icon" style="background:linear-gradient(135deg,#A4161A,#E63946);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <span class="cls-tag">.btn-icon (circle)</span>
+    </div>
+    <div class="item-wrap">
+      <button style="background:none;border:2px solid #E63946;color:#E63946;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      <span class="cls-tag">.btn-icon (outlined)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Full Width -->
+<div class="section">
+  <div class="section-title">Full-Width Buttons</div>
+  <div style="max-width:360px;display:flex;flex-direction:column;gap:12px;">
+    <div class="item-wrap" style="width:100%;">
+      <button class="btn-primary" style="width:100%;">Sign In</button>
+      <span class="cls-tag">.btn-primary (full width)</span>
+    </div>
+    <div class="item-wrap" style="width:100%;">
+      <button class="btn-outlined" style="width:100%;">Create Account</button>
+      <span class="cls-tag">.btn-outlined (full width)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Button Group -->
+<div class="section">
+  <div class="section-title">Button Groups</div>
+  <div class="btn-row">
+    <div class="item-wrap">
+      <div style="display:flex;">
+        <button style="padding:8px 16px;background:#E63946;color:#fff;border:none;border-radius:8px 0 0 8px;cursor:pointer;font-weight:600;font-size:14px;">Call</button>
+        <button style="padding:8px 16px;background:#fff;color:#E63946;border:1px solid #E63946;border-left:none;cursor:pointer;font-weight:600;font-size:14px;">Chat</button>
+        <button style="padding:8px 16px;background:#fff;color:#4A4A4A;border:1px solid #E8E8E8;border-left:none;border-radius:0 8px 8px 0;cursor:pointer;font-weight:600;font-size:14px;">Profile</button>
+      </div>
+      <span class="cls-tag">.btn-group</span>
+    </div>
+  </div>
+</div>
+
+<div style="height:40px;"></div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+</body>
+</html>
