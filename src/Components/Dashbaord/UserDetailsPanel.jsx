@@ -105,7 +105,7 @@ const RatingReviewSection = ({ currentChat }) => {
     const rewiewData = {
       rating: userRating,
       review: reviewComment,
-      agentId: currentChat?.agent?._id,
+      // agentId: currentChat?.agent?._id,
       profileId: currentProfileId,
     };
 

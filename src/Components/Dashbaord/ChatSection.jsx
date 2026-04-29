@@ -194,7 +194,6 @@ const ChatHeader = ({
       const res = await getAgentByIdInWeb(agentId, profileId, queryId);
       const profile = res?.data?.profile || {};
       const agent = res?.data?.agent || {};
-      console.log("isBlocked from API:", profile);
       
       setAgentData((prev) => ({
         ...prev,
@@ -213,7 +212,7 @@ const ChatHeader = ({
   const handleToggleCalls = async () => {
     try {
       await toggleCallStatus(
-        agentId,
+        // agentId,
         currentProfileId,
         currentChat?.roomId,
       );
@@ -228,7 +227,7 @@ const ChatHeader = ({
   const handleBlockAgent = async () => {
     try {
       const res = await blockedAgent(
-        agentId,
+        // agentId,
         currentProfileId,
         currentChat?.roomId,
       );

@@ -166,7 +166,7 @@ const InactiveQueries = () => {
   const handleReactiveQuery = async () => {
     try {
       await addCommentToQuery({
-        comment: "Query has been reactivated.",
+        comment: newComment || "Re-activated the query",
         queryId: currentQuery._id,
       });
 

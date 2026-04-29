@@ -37,7 +37,8 @@ export const fetchAllQueries = async (search) => {
     await db.queries.clear();
     await db.queries.bulkPut(res.data?.data?.queries || []);
     return res.data;
-  } else {
+  } else {
+
     const cachedQueries = await db.queries.toArray();
     return cachedQueries;
   }
@@ -60,7 +61,8 @@ export const addCommentToQuery = async (commentData) => {
 export const updateQueryStatus = async (statusData) => {
   const res = await axios.post(`${baseURL}updateQueryStatus`, statusData, {
     headers: getAuthHeaders(),
-  });
+  });
+
   return res.data;
 };
 
@@ -101,10 +103,10 @@ export const getMessagesByRoomId = async (
   return res.data;
 };
 
-export const toggleCallStatus = async (agentId, profileId, roomId) => {
+export const toggleCallStatus = async (profileId, roomId) => {
   const res = await axios.post(
     `${baseURL}toggleCallStatus`,
-    { agentId, profileId, roomId },
+    { profileId, roomId },
     {
       headers: getAuthHeaders(),
     },
@@ -123,10 +125,10 @@ export const clearMessages = async (roomId) => {
   return res.data;
 };
 
-export const blockedAgent = async (agentId, profileId, roomId) => {
+export const blockedAgent = async (profileId, roomId) => {
   const res = await axios.post(
     `${baseURL}blockedAgent`,
-    { agentId, profileId, roomId },
+    { profileId, roomId },
     {
       headers: getAuthHeaders(),
     },

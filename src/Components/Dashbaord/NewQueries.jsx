@@ -517,8 +517,6 @@ const NewQueries = () => {
         startTime: startTime ? startTime.format("hh:mm A") : "",
         endTime: endTime ? endTime.format("hh:mm A") : "",
         industry: sector,
-        categoryId: sector,
-        formData: formData[sector] || {},
       };
 
       const createQueryData = await dispatch(createQueryThunk(queryData));
